@@ -1,1559 +1,624 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smartisan OS Tactile Budgeting & Asset Management</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js for canvas analytics -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <style>
-        /* Modern / Skeuomorphic Theme Styles */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            user-select: none;
-            overflow-x: hidden;
-            transition: background-color 0.4s ease, color 0.4s ease;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Smartisan Ledger & Budget</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            smartisan: {
+              red: '#C23A2B',
+              redHover: '#A82F22',
+              bgLight: '#E8E3D9',
+              bgWood: '#2B2623',
+              paper: '#F7F4EB',
+              paperDark: '#1C1917',
+              borderLight: '#D3CCBE',
+              borderDark: '#3A3532',
+              textMain: '#2A2421',
+              accentGold: '#D4AF37'
+            }
+          },
+          boxShadow: {
+            'tactile': '0 2px 5px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.6)',
+            'inset-shadow': 'inset 0 2px 4px rgba(0,0,0,0.15)',
+            'wood': '0 10px 25px -5px rgba(0, 0, 0, 0.5)'
+          }
         }
-
-        /* THEME 1: Smartisan Classic (Stitched Leather & Brass) */
-        body.theme-classic {
-            background-color: #2b1f1d;
-            background-image: radial-gradient(#3a2c29 1px, transparent 1px), radial-gradient(#3a2c29 1px, #2b1f1d 1px);
-            background-size: 20px 20px;
-            background-position: 0 0, 10px 10px;
-            color: #33261d;
-        }
-        .theme-classic .smartisan-card {
-            background: #fbf8f3;
-            border: 1px solid #dcd1c4;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2), inset 0 1px 0 #ffffff;
-            border-radius: 12px;
-        }
-        .theme-classic .smartisan-header {
-            background: linear-gradient(180deg, #4d3833 0%, #362622 100%);
-            border-bottom: 2px solid #231714;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            color: #f3ece4;
-        }
-        .theme-classic .smartisan-btn-primary {
-            background: linear-gradient(180deg, #c39a6b 0%, #a07849 100%);
-            border: 1px solid #845e32;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 3px 6px rgba(0,0,0,0.3);
-            color: #ffffff;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
-        }
-
-        /* THEME 2: Smartisan Dark Obsidian */
-        body.theme-dark-leather {
-            background-color: #121214;
-            background-image: radial-gradient(#212125 1px, transparent 1px);
-            background-size: 16px 16px;
-            color: #e2e8f0;
-        }
-        .theme-dark-leather .smartisan-card {
-            background: #1c1d22;
-            border: 1px solid #2e313b;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255,255,255,0.05);
-            border-radius: 12px;
-            color: #e2e8f0;
-        }
-        .theme-dark-leather .smartisan-header {
-            background: linear-gradient(180deg, #252730 0%, #17181f 100%);
-            border-bottom: 2px solid #0d0e12;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            color: #f1f5f9;
-        }
-        .theme-dark-leather .smartisan-btn-primary {
-            background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
-            border: 1px solid #78350f;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 0 3px 6px rgba(0,0,0,0.5);
-            color: #ffffff;
-        }
-
-        /* THEME 3: Smartisan Ivory Minimal */
-        body.theme-ivory {
-            background-color: #f3f2ee;
-            color: #27272a;
-        }
-        .theme-ivory .smartisan-card {
-            background: #ffffff;
-            border: 1px solid #e4e4e7;
-            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06), inset 0 1px 0 #ffffff;
-            border-radius: 12px;
-        }
-        .theme-ivory .smartisan-header {
-            background: #ffffff;
-            border-bottom: 1px solid #e4e4e7;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-            color: #18181b;
-        }
-        .theme-ivory .smartisan-btn-primary {
-            background: linear-gradient(180deg, #3f3f46 0%, #27272a 100%);
-            border: 1px solid #18181b;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            color: #ffffff;
-        }
-
-        /* THEME 4: Smartisan Vintage Wood */
-        body.theme-wood {
-            background-color: #1f140e;
-            background-image: repeating-linear-gradient(45deg, #251811 0, #251811 10px, #1f140e 10px, #1f140e 20px);
-            color: #3b2314;
-        }
-        .theme-wood .smartisan-card {
-            background: #f5eedc;
-            border: 1px solid #cbb898;
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5), inset 0 1px 0 #fff;
-            border-radius: 10px;
-        }
-        .theme-wood .smartisan-header {
-            background: linear-gradient(180deg, #422517 0%, #2e180d 100%);
-            border-bottom: 2px solid #190c06;
-            color: #f7ebda;
-        }
-        .theme-wood .smartisan-btn-primary {
-            background: linear-gradient(180deg, #b45309 0%, #78350f 100%);
-            border: 1px solid #451a03;
-            color: #fef3c7;
-        }
-
-        /* Leather Stitching Border Effect */
-        .stitched-border {
-            outline: 2px dashed rgba(180, 140, 100, 0.35);
-            outline-offset: -6px;
-        }
-
-        /* Tactile Button Press Animation */
-        .tactile-btn {
-            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .tactile-btn:active {
-            transform: translateY(2px) scale(0.98);
-        }
-
-        /* Layout Edit Mode Styling */
-        .edit-layout-active .dashboard-block {
-            border: 2px dashed #d97706 !important;
-            position: relative;
-        }
-        .dashboard-block.dragging {
-            opacity: 0.4;
-            scale: 0.98;
-        }
-
-        /* Glowing Voice Pulse Animation */
-        @keyframes pulse-red-glow {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { box-shadow: 0 0 0 14px rgba(239, 68, 68, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-        .recording-pulse {
-            animation: pulse-red-glow 1.5s infinite;
-            background-color: #ef4444 !important;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.05);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(150,150,150,0.3);
-            border-radius: 4px;
-        }
-    </style>
+      }
+    }
+  </script>
+  <style>
+    /* Skeuomorphic & Tactile Styling */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .paper-texture {
+      background-image: radial-gradient(#d1ca2210 1px, transparent 1px);
+      background-size: 8px 8px;
+    }
+    .stitch-border {
+      border: 1px dashed rgba(0,0,0,0.2);
+    }
+    .dark .stitch-border {
+      border: 1px dashed rgba(255,255,255,0.15);
+    }
+    .tactile-btn {
+      transition: all 0.08s ease-in-out;
+      box-shadow: 0 3px 0 rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.4);
+    }
+    .tactile-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.2), inset 0 1px 2px rgba(0,0,0,0.2);
+    }
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 4px; }
+  </style>
 </head>
-<body class="theme-classic min-h-screen pb-20">
+<body class="bg-smartisan-bgLight dark:bg-smartisan-bgWood text-smartisan-textMain dark:text-gray-200 min-h-screen pb-20 selection:bg-smartisan-red selection:text-white transition-colors duration-200">
 
-    <!-- TOP HEADER -->
-    <header class="smartisan-header sticky top-0 z-30 px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-            <div class="w-9 h-9 rounded-xl bg-amber-600 flex items-center justify-center text-white shadow-md font-bold text-lg border border-amber-400/40">
-                <i class="fa-solid fa-wallet"></i>
-            </div>
-            <div>
-                <h1 class="font-extrabold text-base leading-tight tracking-wide" id="appTitle">Smartisan Ledger</h1>
-                <p class="text-xs opacity-75" id="appSubtitle">Tactile Asset & Expense Tracker</p>
-            </div>
-        </div>
-
-        <div class="flex items-center space-x-2">
-            <!-- Edit Layout Mode Toggle Button -->
-            <button id="toggleEditLayoutBtn" onclick="toggleEditLayoutMode()" class="tactile-btn px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-xs font-bold text-amber-200 flex items-center gap-1.5">
-                <i class="fa-solid fa-arrows-up-down-left-right"></i>
-                <span id="editLayoutBtnText">Edit Layout</span>
-            </button>
-
-            <!-- Theme Quick Switcher -->
-            <select id="themeSelector" onchange="changeTheme(this.value)" class="text-xs bg-black/20 text-current border border-white/20 rounded-lg px-2 py-1.5 focus:outline-none cursor-pointer">
-                <option value="classic" class="text-black">Classic Leather</option>
-                <option value="dark-leather" class="text-black">Dark Obsidian</option>
-                <option value="ivory" class="text-black">Ivory Minimal</option>
-                <option value="wood" class="text-black">Vintage Mahogany</option>
-            </select>
-
-            <!-- Settings Trigger Button -->
-            <button onclick="toggleSettingsDrawer(true)" class="tactile-btn p-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-current transition" title="Open Settings">
-                <i class="fa-solid fa-gear text-base"></i>
-            </button>
-        </div>
-    </header>
-
-    <!-- EDIT LAYOUT BANNER NOTIFICATION -->
-    <div id="layoutEditBanner" class="hidden bg-amber-600 text-white px-4 py-2 text-center text-xs font-bold flex items-center justify-center gap-2 shadow-inner">
-        <i class="fa-solid fa-hand-pointer"></i>
-        <span>Layout Customization Mode Active: Drag cards using brass handles or tap arrows to reorder.</span>
-        <button onclick="toggleEditLayoutMode(false)" class="ml-4 px-2 py-0.5 rounded bg-black/20 hover:bg-black/40 text-white underline">Done</button>
+  <!-- Header Bar -->
+  <header class="sticky top-0 z-30 bg-[#2C2825] text-[#E5DCCB] border-b border-[#1A1816] shadow-md px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-full bg-smartisan-red flex items-center justify-center text-white font-bold text-sm shadow-inner border border-red-400/30">
+        <i class="fa-solid me-0.5 fa-book"></i>
+      </div>
+      <div>
+        <h1 class="font-bold text-base tracking-wide text-[#F3ECE1]" id="appTitle">Smartisan Ledger</h1>
+        <p class="text-[10px] text-gray-400" id="appSubtitle">Tactile Personal Finance</p>
+      </div>
     </div>
 
-    <!-- MAIN CONTAINER WITH DYNAMICALLY REORDERABLE BLOCKS -->
-    <main id="dashboardContainer" class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+    <!-- Top Controls -->
+    <div class="flex items-center gap-2">
+      <button onclick="toggleTheme()" class="w-8 h-8 rounded bg-[#3D3733] border border-[#524B45] text-amber-200 flex items-center justify-center tactile-btn text-xs" title="Toggle Theme">
+        <i class="fa-solid fa-palette"></i>
+      </button>
+      <button onclick="openSettings()" class="w-8 h-8 rounded bg-[#3D3733] border border-[#524B45] text-gray-300 flex items-center justify-center tactile-btn text-xs" title="Settings">
+        <i class="fa-solid fa-gear"></i>
+      </button>
+    </div>
+  </header>
 
-        <!-- BLOCK 1: VOICE & NATURAL LANGUAGE IDEA PILL INPUT -->
-        <div id="block-voicePill" class="dashboard-block smartisan-card p-4 sm:p-5 relative overflow-hidden" draggable="false">
-            <div class="block-drag-handle hidden p-2 mb-2 bg-amber-500/10 rounded-lg border border-amber-500/20 flex items-center justify-between cursor-grab">
-                <div class="flex items-center gap-2 font-bold text-xs text-amber-700 dark:text-amber-400">
-                    <i class="fa-solid fa-grip-vertical"></i>
-                    <span>Voice & Natural Language Bar</span>
-                </div>
-                <div class="flex items-center gap-1">
-                    <button onclick="moveBlock('block-voicePill', -1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-up"></i></button>
-                    <button onclick="moveBlock('block-voicePill', 1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-down"></i></button>
-                </div>
-            </div>
+  <!-- Main Container -->
+  <main class="max-w-md mx-auto p-3 space-y-4">
 
-            <div class="flex items-center justify-between mb-2">
-                <label class="text-xs font-bold uppercase tracking-wider text-amber-800/80 dark:text-amber-400/90 flex items-center gap-1.5">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span id="labelNaturalInput">Smart Voice & Natural Text Entry</span>
-                </label>
-                <span class="text-[11px] opacity-60">e.g., "Spent $45 on Lunch using Chase"</span>
-            </div>
+    <!-- Idea Pill & Voice Command Bar -->
+    <section class="bg-smartisan-paper dark:bg-smartisan-paperDark rounded-xl p-3 border border-smartisan-borderLight dark:border-smartisan-borderDark shadow-tactile relative stitch-border">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
+          <i class="fa-solid fa-[#C23A2B] fa-capsules"></i> <span data-i18n="expressLog">Idea Pill Quick Express Log</span>
+        </span>
+        <span id="voiceStatus" class="text-[10px] text-gray-400 italic">Ready</span>
+      </div>
 
-            <div class="flex items-center gap-2">
-                <div class="relative flex-1">
-                    <input type="text" id="naturalInput" placeholder="Type or speak expense (e.g. 'Paid $120 for Electric bill')..."
-                        class="w-full pl-4 pr-10 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium text-sm transition"
-                        onkeypress="if(event.key === 'Enter') processNaturalLanguageInput()">
-                    <button onclick="processNaturalLanguageInput()" class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-amber-700 hover:text-amber-900 dark:text-amber-400">
-                        <i class="fa-solid fa-arrow-right text-base"></i>
-                    </button>
-                </div>
-
-                <button id="voiceMicBtn" onclick="toggleVoiceRecognition()" 
-                    class="tactile-btn flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm shadow-lg border border-red-400/40 transition shrink-0">
-                    <i id="voiceMicIcon" class="fa-solid fa-microphone text-base"></i>
-                    <span id="voiceMicText" class="hidden sm:inline">Voice Log</span>
-                </button>
-            </div>
-            <div id="voiceStatus" class="hidden text-xs text-red-500 font-medium mt-1.5 flex items-center gap-1">
-                <span class="inline-block w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
-                <span id="voiceStatusText">Listening... Speak your transaction clearly.</span>
-            </div>
+      <!-- Natural Language Input -->
+      <div class="relative flex items-center">
+        <input type="text" id="nlpInput" placeholder="e.g. Coffee 4.50 or Gas 35 Chase" 
+          class="w-full pl-3 pr-20 py-2.5 bg-white dark:bg-[#252220] border border-gray-300 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-smartisan-red shadow-inner">
+        
+        <div class="absolute right-1 flex items-center gap-1">
+          <button onclick="startVoiceRecognition()" id="micBtn" class="w-8 h-8 rounded-md bg-amber-600 hover:bg-amber-700 text-white flex items-center justify-center tactile-btn shadow" title="Voice Input">
+            <i class="fa-solid fa-microphone text-xs"></i>
+          </button>
+          <button onclick="parseAndAddNLP()" class="w-8 h-8 rounded-md bg-smartisan-red hover:bg-smartisan-redHover text-white flex items-center justify-center tactile-btn shadow" title="Submit">
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
         </div>
+      </div>
+    </section>
 
-        <!-- BLOCK 2: EXPRESS 1-TAP QUICK BADGES -->
-        <div id="block-expressBadges" class="dashboard-block smartisan-card p-4" draggable="false">
-            <div class="block-drag-handle hidden p-2 mb-2 bg-amber-500/10 rounded-lg border border-amber-500/20 flex items-center justify-between cursor-grab">
-                <div class="flex items-center gap-2 font-bold text-xs text-amber-700 dark:text-amber-400">
-                    <i class="fa-solid fa-grip-vertical"></i>
-                    <span>1-Tap Express Badges</span>
-                </div>
-                <div class="flex items-center gap-1">
-                    <button onclick="moveBlock('block-expressBadges', -1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-up"></i></button>
-                    <button onclick="moveBlock('block-expressBadges', 1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-down"></i></button>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between mb-3">
-                <h3 class="text-xs font-bold uppercase tracking-wider opacity-70 flex items-center gap-1.5">
-                    <i class="fa-solid fa-bolt text-amber-600"></i>
-                    <span id="labelExpressBadges">1-Tap Express Quick Log</span>
-                </h3>
-                <button onclick="toggleSettingsDrawer(true, 'expressTab')" class="text-xs text-amber-700 dark:text-amber-400 hover:underline">
-                    Edit Express Badges
-                </button>
-            </div>
-            <div id="expressBadgesContainer" class="flex flex-wrap gap-2.5">
-                <!-- Dynamically Populated Express Badges -->
-            </div>
-        </div>
-
-        <!-- BLOCK 3: ASSETS, NET WORTH & BANK ACCOUNTS -->
-        <div id="block-netWorthAccounts" class="dashboard-block grid grid-cols-1 md:grid-cols-3 gap-6" draggable="false">
-            <!-- TOTAL NET WORTH CARD -->
-            <div class="smartisan-card p-5 flex flex-col justify-between stitched-border relative">
-                <div class="block-drag-handle hidden p-2 mb-2 bg-amber-500/10 rounded-lg border border-amber-500/20 flex items-center justify-between cursor-grab">
-                    <div class="flex items-center gap-2 font-bold text-xs text-amber-700 dark:text-amber-400">
-                        <i class="fa-solid fa-grip-vertical"></i>
-                        <span>Accounts Block</span>
-                    </div>
-                    <div class="flex items-center gap-1">
-                        <button onclick="moveBlock('block-netWorthAccounts', -1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-up"></i></button>
-                        <button onclick="moveBlock('block-netWorthAccounts', 1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-down"></i></button>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex items-center justify-between text-xs opacity-75 font-semibold">
-                        <span id="labelTotalNetWorth">Total Net Worth</span>
-                        <i class="fa-solid fa-shield-halved"></i>
-                    </div>
-                    <div class="text-3xl font-extrabold mt-2 tracking-tight" id="netWorthDisplay">$0.00</div>
-                </div>
-                <div class="mt-4 pt-3 border-t border-black/10 dark:border-white/10 flex justify-between text-xs opacity-80">
-                    <div>Income: <span id="totalIncomeDisplay" class="text-emerald-600 font-bold">$0.00</span></div>
-                    <div>Expense: <span id="totalExpenseDisplay" class="text-rose-600 font-bold">$0.00</span></div>
-                </div>
-            </div>
-
-            <!-- ACCOUNTS / CARDS LIST -->
-            <div class="smartisan-card p-5 md:col-span-2">
-                <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-bold text-sm tracking-wide flex items-center gap-2">
-                        <i class="fa-solid fa-building-columns text-amber-600"></i>
-                        <span id="labelAccounts">Accounts & Balances</span>
-                    </h3>
-                    <button onclick="toggleSettingsDrawer(true, 'accountsTab')" class="text-xs text-amber-700 dark:text-amber-400 hover:underline">
-                        Manage Accounts
-                    </button>
-                </div>
-                <div id="accountsListGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    <!-- Accounts rendered here -->
-                </div>
-            </div>
-        </div>
-
-        <!-- BLOCK 4: CATEGORY SPENDING & BUDGET LIMITS -->
-        <div id="block-categoryBudgets" class="dashboard-block smartisan-card p-5" draggable="false">
-            <div class="block-drag-handle hidden p-2 mb-2 bg-amber-500/10 rounded-lg border border-amber-500/20 flex items-center justify-between cursor-grab">
-                <div class="flex items-center gap-2 font-bold text-xs text-amber-700 dark:text-amber-400">
-                    <i class="fa-solid fa-grip-vertical"></i>
-                    <span>Category Budgets Block</span>
-                </div>
-                <div class="flex items-center gap-1">
-                    <button onclick="moveBlock('block-categoryBudgets', -1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-up"></i></button>
-                    <button onclick="moveBlock('block-categoryBudgets', 1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-down"></i></button>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <h3 class="font-bold text-sm tracking-wide flex items-center gap-2">
-                        <i class="fa-solid fa-chart-pie text-amber-600"></i>
-                        <span id="labelCategoryBudgets">Category Spending & Limits</span>
-                    </h3>
-                    <p class="text-xs opacity-60">Monthly limits and burn rates</p>
-                </div>
-                <button onclick="toggleSettingsDrawer(true, 'categoriesTab')" class="text-xs text-amber-700 dark:text-amber-400 hover:underline">
-                    Edit Categories
-                </button>
-            </div>
-            <div id="categoryBudgetsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Dynamically rendered Category Cards -->
-            </div>
-        </div>
-
-        <!-- BLOCK 5: VISUAL CANVAS ANALYTICS -->
-        <div id="block-analyticsCharts" class="dashboard-block grid grid-cols-1 lg:grid-cols-2 gap-6" draggable="false">
-            <div class="smartisan-card p-5">
-                <div class="block-drag-handle hidden p-2 mb-2 bg-amber-500/10 rounded-lg border border-amber-500/20 flex items-center justify-between cursor-grab">
-                    <div class="flex items-center gap-2 font-bold text-xs text-amber-700 dark:text-amber-400">
-                        <i class="fa-solid fa-grip-vertical"></i>
-                        <span>Analytics Block</span>
-                    </div>
-                    <div class="flex items-center gap-1">
-                        <button onclick="moveBlock('block-analyticsCharts', -1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-up"></i></button>
-                        <button onclick="moveBlock('block-analyticsCharts', 1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-down"></i></button>
-                    </div>
-                </div>
-
-                <h3 class="font-bold text-sm mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-chart-donut text-amber-600"></i>
-                    Expense Category Breakdown
-                </h3>
-                <div class="relative h-64 w-full">
-                    <canvas id="expenseDonutChart"></canvas>
-                </div>
-            </div>
-            <div class="smartisan-card p-5">
-                <h3 class="font-bold text-sm mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-chart-column text-amber-600"></i>
-                    Income vs Expense Comparison
-                </h3>
-                <div class="relative h-64 w-full">
-                    <canvas id="incomeExpenseBarChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- BLOCK 6: SAVINGS GOAL TRACKER -->
-        <div id="block-savingsGoals" class="dashboard-block smartisan-card p-5" draggable="false">
-            <div class="block-drag-handle hidden p-2 mb-2 bg-amber-500/10 rounded-lg border border-amber-500/20 flex items-center justify-between cursor-grab">
-                <div class="flex items-center gap-2 font-bold text-xs text-amber-700 dark:text-amber-400">
-                    <i class="fa-solid fa-grip-vertical"></i>
-                    <span>Savings Goals Block</span>
-                </div>
-                <div class="flex items-center gap-1">
-                    <button onclick="moveBlock('block-savingsGoals', -1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-up"></i></button>
-                    <button onclick="moveBlock('block-savingsGoals', 1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-down"></i></button>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="font-bold text-sm tracking-wide flex items-center gap-2">
-                    <i class="fa-solid fa-piggy-bank text-amber-600"></i>
-                    Savings Goals Tracker
-                </h3>
-                <button onclick="promptAddGoal()" class="tactile-btn text-xs px-3 py-1.5 rounded-lg smartisan-btn-primary">
-                    + Add Goal
-                </button>
-            </div>
-            <div id="savingsGoalsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Dynamically populated goals -->
-            </div>
-        </div>
-
-        <!-- BLOCK 7: TRANSACTION HISTORY LEDGER -->
-        <div id="block-transactionHistory" class="dashboard-block smartisan-card p-5" draggable="false">
-            <div class="block-drag-handle hidden p-2 mb-2 bg-amber-500/10 rounded-lg border border-amber-500/20 flex items-center justify-between cursor-grab">
-                <div class="flex items-center gap-2 font-bold text-xs text-amber-700 dark:text-amber-400">
-                    <i class="fa-solid fa-grip-vertical"></i>
-                    <span>Transaction History Block</span>
-                </div>
-                <div class="flex items-center gap-1">
-                    <button onclick="moveBlock('block-transactionHistory', -1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-up"></i></button>
-                    <button onclick="moveBlock('block-transactionHistory', 1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-down"></i></button>
-                </div>
-            </div>
-
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                <div>
-                    <h3 class="font-bold text-sm tracking-wide flex items-center gap-2">
-                        <i class="fa-solid fa-list-check text-amber-600"></i>
-                        <span id="labelTransactionHistory">Transaction History Ledger</span>
-                    </h3>
-                    <p class="text-xs opacity-60">Search, filter, or update individual entries</p>
-                </div>
-                
-                <div class="flex items-center gap-2">
-                    <input type="text" id="txSearchInput" onkeyup="renderTransactions()" placeholder="Search transactions..." 
-                        class="px-3 py-1.5 text-xs rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 focus:outline-none">
-                    <select id="txFilterType" onchange="renderTransactions()" class="px-2 py-1.5 text-xs rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
-                        <option value="ALL">All Types</option>
-                        <option value="EXPENSE">Expense</option>
-                        <option value="INCOME">Income</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-xs">
-                    <thead>
-                        <tr class="border-b border-black/10 dark:border-white/10 opacity-70">
-                            <th class="py-2 px-3 font-semibold">Date</th>
-                            <th class="py-2 px-3 font-semibold">Note / Description</th>
-                            <th class="py-2 px-3 font-semibold">Category</th>
-                            <th class="py-2 px-3 font-semibold">Account</th>
-                            <th class="py-2 px-3 font-semibold text-right">Amount</th>
-                            <th class="py-2 px-3 font-semibold text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="transactionsTableBody">
-                        <!-- Dynamic Transactions -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- FLOATING HIGH-VISIBILITY LEDGER PILL VOICEMIC -->
-    <div class="fixed bottom-6 right-6 z-40 flex items-center gap-2">
-        <button id="floatingMicBtn" onclick="toggleVoiceRecognition()" 
-            class="tactile-btn w-14 h-14 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-2xl border-2 border-white/40">
-            <i class="fa-solid fa-microphone text-xl"></i>
+    <!-- NEW: Item Preset Quick Badges (Click Item -> Input Amount) -->
+    <section class="bg-smartisan-paper dark:bg-smartisan-paperDark rounded-xl p-3 border border-smartisan-borderLight dark:border-smartisan-borderDark shadow-tactile stitch-border">
+      <div class="flex items-center justify-between mb-2.5">
+        <span class="text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
+          <i class="fa-solid fa-bolt"></i> <span data-i18n="quickItemPresets">1-Tap Item Presets</span>
+        </span>
+        <button onclick="openEditPresetsModal()" class="text-[11px] text-smartisan-red hover:underline font-medium">
+          <i class="fa-solid fa-pen-to-square"></i> <span data-i18n="editItems">Edit Items</span>
         </button>
-    </div>
+      </div>
 
-    <!-- VOICE PARSED PREVIEW & CONFIRMATION MODAL -->
-    <div id="voicePreviewModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="smartisan-card w-full max-w-lg shadow-2xl border border-white/20 p-5 space-y-4">
-            <div class="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-3">
-                <div class="flex items-center gap-2 text-amber-600">
-                    <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
-                    <h3 class="font-extrabold text-sm">Parsed Voice Transaction</h3>
-                </div>
-                <button onclick="closeVoiceModal()" class="text-base opacity-60 hover:opacity-100"><i class="fa-solid fa-xmark"></i></button>
-            </div>
+      <!-- Presets Grid -->
+      <div id="quickItemsContainer" class="grid grid-cols-4 gap-2">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
 
-            <div class="bg-black/5 dark:bg-white/5 p-3 rounded-xl border border-black/10 dark:border-white/10 space-y-1">
-                <div class="text-[10px] font-bold uppercase tracking-wider opacity-60">Transcript</div>
-                <p id="voiceModalTranscript" class="text-xs italic font-medium">"..."</p>
-            </div>
+    <!-- Account Net Worth & Accounts Carousel -->
+    <section class="bg-smartisan-paper dark:bg-smartisan-paperDark rounded-xl p-3 border border-smartisan-borderLight dark:border-smartisan-borderDark shadow-tactile stitch-border">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
+          <i class="fa-solid fa-wallet"></i> <span data-i18n="accountsHeading">Accounts & Net Liquid</span>
+        </span>
+        <span id="netWorthDisplay" class="text-sm font-black text-emerald-600 dark:text-emerald-400">$0.00</span>
+      </div>
 
-            <div class="grid grid-cols-2 gap-3 text-xs">
-                <div>
-                    <label class="block font-bold mb-1 opacity-70">Type</label>
-                    <select id="vmType" class="w-full p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
-                        <option value="EXPENSE">Expense</option>
-                        <option value="INCOME">Income</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block font-bold mb-1 opacity-70">Amount</label>
-                    <input type="number" step="0.01" id="vmAmount" class="w-full p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 font-bold">
-                </div>
-                <div>
-                    <label class="block font-bold mb-1 opacity-70">Category</label>
-                    <select id="vmCategory" class="w-full p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10"></select>
-                </div>
-                <div>
-                    <label class="block font-bold mb-1 opacity-70">Account</label>
-                    <select id="vmAccount" class="w-full p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10"></select>
-                </div>
-                <div class="col-span-2">
-                    <label class="block font-bold mb-1 opacity-70">Date</label>
-                    <input type="date" id="vmDate" class="w-full p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
-                </div>
-                <div class="col-span-2">
-                    <label class="block font-bold mb-1 opacity-70">Note / Description</label>
-                    <input type="text" id="vmNote" class="w-full p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
-                </div>
-            </div>
+      <div id="accountsList" class="flex gap-2 overflow-x-auto pb-1 pt-1 scrollbar-none">
+        <!-- Account cards rendered here -->
+      </div>
+    </section>
 
-            <div class="flex justify-end gap-2 pt-2 border-t border-black/10 dark:border-white/10">
-                <button onclick="closeVoiceModal()" class="px-4 py-2 rounded-xl bg-black/10 hover:bg-black/20 text-xs font-bold">Cancel</button>
-                <button onclick="confirmVoiceTransaction()" class="px-5 py-2 rounded-xl smartisan-btn-primary text-xs font-bold">Confirm & Log</button>
-            </div>
+    <!-- Visual Analytics Canvas Charts -->
+    <section class="bg-smartisan-paper dark:bg-smartisan-paperDark rounded-xl p-3 border border-smartisan-borderLight dark:border-smartisan-borderDark shadow-tactile stitch-border">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
+          <i class="fa-solid fa-chart-pie"></i> <span data-i18n="analyticsHeading">Monthly Breakdown</span>
+        </span>
+        <select id="analyticsMonthSelect" onchange="renderAnalytics()" class="text-xs bg-white dark:bg-[#252220] border border-gray-300 dark:border-gray-700 rounded px-2 py-1">
+          <!-- Dynamic months -->
+        </select>
+      </div>
+
+      <div class="relative w-full h-48 flex items-center justify-center">
+        <canvas id="categoryPieChart" class="max-w-full max-h-full"></canvas>
+      </div>
+    </section>
+
+    <!-- Monthly Budget Category Limits -->
+    <section class="bg-smartisan-paper dark:bg-smartisan-paperDark rounded-xl p-3 border border-smartisan-borderLight dark:border-smartisan-borderDark shadow-tactile stitch-border">
+      <div class="flex items-center justify-between mb-2.5">
+        <span class="text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
+          <i class="fa-solid fa-sliders"></i> <span data-i18n="budgetLimitsHeading">Category Budgets</span>
+        </span>
+        <button onclick="openBudgetLimitsModal()" class="text-[11px] text-smartisan-red hover:underline font-medium">
+          <i class="fa-solid fa-[#C23A2B] fa-gear"></i> <span data-i18n="setLimits">Set Limits</span>
+        </button>
+      </div>
+
+      <div id="categoryBudgetsContainer" class="space-y-2.5">
+        <!-- Budget bars rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- Transaction History Logs -->
+    <section class="bg-smartisan-paper dark:bg-smartisan-paperDark rounded-xl p-3 border border-smartisan-borderLight dark:border-smartisan-borderDark shadow-tactile stitch-border">
+      <div class="flex items-center justify-between mb-2.5">
+        <span class="text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-400 flex items-center gap-1.5">
+          <i class="fa-solid fa-list-check"></i> <span data-i18n="historyHeading">Transaction History</span>
+        </span>
+        <input type="text" id="historySearchInput" onkeyup="filterTransactions()" placeholder="Search..." class="text-xs px-2 py-1 bg-white dark:bg-[#252220] border border-gray-300 dark:border-gray-700 rounded w-28">
+      </div>
+
+      <div id="transactionHistoryList" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+        <!-- Transactions list rendered dynamically -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Quick Amount Entry Modal for Presets -->
+  <div id="quickAmountModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-smartisan-paper dark:bg-smartisan-paperDark w-full max-w-sm rounded-t-2xl sm:rounded-2xl border border-smartisan-borderLight dark:border-smartisan-borderDark p-4 shadow-2xl animate-slide-up">
+      <div class="flex items-center justify-between pb-3 border-b border-gray-300 dark:border-gray-700">
+        <div class="flex items-center gap-2">
+          <span id="modalItemIcon" class="text-xl">☕</span>
+          <div>
+            <h3 id="modalItemTitle" class="font-bold text-sm">Coffee</h3>
+            <p id="modalItemCategory" class="text-[10px] text-gray-500">Food & Dining</p>
+          </div>
         </div>
-    </div>
+        <button onclick="closeQuickAmountModal()" class="text-gray-400 hover:text-gray-600 text-lg">&times;</button>
+      </div>
 
-    <!-- COMPREHENSIVE SETTINGS DRAWER / HUB MODAL -->
-    <div id="settingsModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="smartisan-card w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-white/20">
-            
-            <div class="p-4 border-b border-black/10 dark:border-white/10 flex items-center justify-between bg-black/5 dark:bg-white/5">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-sliders text-amber-600 text-lg"></i>
-                    <h2 class="font-extrabold text-base">Smartisan Settings Hub</h2>
-                </div>
-                <button onclick="toggleSettingsDrawer(false)" class="p-1 text-base opacity-60 hover:opacity-100">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <div class="flex border-b border-black/10 dark:border-white/10 text-xs font-semibold overflow-x-auto bg-black/5">
-                <button onclick="switchSettingsTab('layoutTab')" id="btn-layoutTab" class="px-4 py-2.5 border-b-2 border-amber-600 text-amber-600">Layout Blocks</button>
-                <button onclick="switchSettingsTab('expressTab')" id="btn-expressTab" class="px-4 py-2.5 border-b-2 border-transparent hover:text-amber-600">1-Tap Express</button>
-                <button onclick="switchSettingsTab('accountsTab')" id="btn-accountsTab" class="px-4 py-2.5 border-b-2 border-transparent hover:text-amber-600">Accounts & Banks</button>
-                <button onclick="switchSettingsTab('categoriesTab')" id="btn-categoriesTab" class="px-4 py-2.5 border-b-2 border-transparent hover:text-amber-600">Categories & Budgets</button>
-                <button onclick="switchSettingsTab('preferencesTab')" id="btn-preferencesTab" class="px-4 py-2.5 border-b-2 border-transparent hover:text-amber-600">Preferences</button>
-                <button onclick="switchSettingsTab('dataTab')" id="btn-dataTab" class="px-4 py-2.5 border-b-2 border-transparent hover:text-amber-600">Data & Backup</button>
-            </div>
-
-            <div class="p-5 overflow-y-auto flex-1 space-y-6 text-xs">
-
-                <!-- TAB 0: LAYOUT BLOCK VISIBILITY & REORDERING -->
-                <div id="tab-layoutTab" class="settings-tab-content space-y-4">
-                    <div class="flex items-center justify-between">
-                        <p class="opacity-70">Toggle block visibility and reset default dashboard layout order.</p>
-                        <button onclick="resetLayoutOrder()" class="tactile-btn px-3 py-1 rounded bg-black/10 hover:bg-black/20">Reset Layout Order</button>
-                    </div>
-                    <div id="settingsLayoutBlocksList" class="space-y-2">
-                        <!-- Dynamically Populated Layout Options -->
-                    </div>
-                </div>
-
-                <!-- TAB 1: 1-TAP EXPRESS BADGES -->
-                <div id="tab-expressTab" class="settings-tab-content space-y-4 hidden">
-                    <div class="flex items-center justify-between">
-                        <p class="opacity-70">Customize quick log buttons for fast single-tap expense logging.</p>
-                        <button onclick="addNewExpressBadge()" class="tactile-btn px-3 py-1.5 rounded-lg smartisan-btn-primary">+ Add Express Badge</button>
-                    </div>
-                    <div id="settingsExpressList" class="space-y-2">
-                        <!-- Rendered via JS -->
-                    </div>
-                </div>
-
-                <!-- TAB 2: ACCOUNTS & BANKS -->
-                <div id="tab-accountsTab" class="settings-tab-content space-y-4 hidden">
-                    <div class="flex items-center justify-between">
-                        <p class="opacity-70">Manage your financial accounts, starting balances, and icons.</p>
-                        <button onclick="addNewAccount()" class="tactile-btn px-3 py-1.5 rounded-lg smartisan-btn-primary">+ Add Account</button>
-                    </div>
-                    <div id="settingsAccountsList" class="space-y-2">
-                        <!-- Rendered via JS -->
-                    </div>
-                </div>
-
-                <!-- TAB 3: CATEGORIES & BUDGETS -->
-                <div id="tab-categoriesTab" class="settings-tab-content space-y-4 hidden">
-                    <div class="flex items-center justify-between">
-                        <p class="opacity-70">Define category spending limits, icons, and colors.</p>
-                        <button onclick="addNewCategory()" class="tactile-btn px-3 py-1.5 rounded-lg smartisan-btn-primary">+ Add Category</button>
-                    </div>
-                    <div id="settingsCategoriesList" class="space-y-2">
-                        <!-- Rendered via JS -->
-                    </div>
-                </div>
-
-                <!-- TAB 4: PREFERENCES -->
-                <div id="tab-preferencesTab" class="settings-tab-content space-y-4 hidden">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="space-y-1.5">
-                            <label class="font-bold">Currency Symbol</label>
-                            <select id="settingCurrency" onchange="updatePreferences()" class="w-full p-2.5 rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
-                                <option value="$">USD ($)</option>
-                                <option value="¥">CNY / JPY (¥)</option>
-                                <option value="€">EUR (€)</option>
-                                <option value="£">GBP (£)</option>
-                            </select>
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="font-bold">Display Language</label>
-                            <select id="settingLanguage" onchange="updatePreferences()" class="w-full p-2.5 rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
-                                <option value="en">English (EN)</option>
-                                <option value="zh-CN">简体中文 (CN)</option>
-                                <option value="zh-TW">繁體中文 (TW)</option>
-                                <option value="es">Español (ES)</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 5: DATA MANAGEMENT -->
-                <div id="tab-dataTab" class="settings-tab-content space-y-4 hidden">
-                    <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-3">
-                        <h4 class="font-bold">Export & Import Data</h4>
-                        <p class="opacity-70">Backup your data to JSON or export transaction records to CSV.</p>
-                        <div class="flex flex-wrap gap-2">
-                            <button onclick="exportJSON()" class="tactile-btn px-3 py-2 rounded-lg bg-emerald-600 text-white font-medium">
-                                <i class="fa-solid fa-download me-1"></i> Export JSON
-                            </button>
-                            <button onclick="exportCSV()" class="tactile-btn px-3 py-2 rounded-lg bg-blue-600 text-white font-medium">
-                                <i class="fa-solid fa-file-csv me-1"></i> Export CSV
-                            </button>
-                            <label class="tactile-btn px-3 py-2 rounded-lg bg-purple-600 text-white font-medium cursor-pointer">
-                                <i class="fa-solid fa-upload me-1"></i> Import JSON
-                                <input type="file" id="importJsonInput" accept=".json" onchange="importJSON(event)" class="hidden">
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 space-y-3">
-                        <h4 class="font-bold text-rose-600 dark:text-rose-400">Danger Zone</h4>
-                        <p class="opacity-70">Permanently erase all local storage data and reset application defaults.</p>
-                        <button onclick="confirmResetAllData()" class="tactile-btn px-4 py-2 rounded-lg bg-rose-600 text-white font-bold">
-                            <i class="fa-solid fa-triangle-exclamation me-1"></i> Reset All Local Data
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="p-4 border-t border-black/10 dark:border-white/10 flex justify-end bg-black/5 dark:bg-white/5">
-                <button onclick="toggleSettingsDrawer(false)" class="tactile-btn px-5 py-2 rounded-xl smartisan-btn-primary font-bold">
-                    Done
-                </button>
-            </div>
-
+      <!-- Keypad Display -->
+      <div class="my-4">
+        <div class="text-xs text-gray-500 mb-1" data-i18n="enterAmount">Enter Expense Amount</div>
+        <div class="bg-white dark:bg-[#252220] border border-gray-300 dark:border-gray-700 rounded-lg p-3 text-right">
+          <span class="text-xs text-gray-400 mr-1">$</span>
+          <span id="keypadDisplay" class="text-2xl font-black text-smartisan-textMain dark:text-white">0</span>
         </div>
+      </div>
+
+      <!-- Bank Account Selector -->
+      <div class="mb-4">
+        <label class="block text-[11px] font-bold text-gray-500 mb-1" data-i18n="selectAccount">Account</label>
+        <select id="keypadAccountSelect" class="w-full text-xs p-2 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#252220]">
+          <!-- Rendered dynamically -->
+        </select>
+      </div>
+
+      <!-- Tactile Keypad -->
+      <div class="grid grid-cols-3 gap-2 mb-4">
+        <button onclick="keypadPress('1')" class="py-3 bg-white dark:bg-[#2A2624] border border-gray-300 dark:border-gray-700 rounded-lg font-bold text-lg tactile-btn">1</button>
+        <button onclick="keypadPress('2')" class="py-3 bg-white dark:bg-[#2A2624] border border-gray-300 dark:border-gray-700 rounded-lg font-bold text-lg tactile-btn">2</button>
+        <button onclick="keypadPress('3')" class="py-3 bg-white dark:bg-[#2A2624] border border-gray-300 dark:border-gray-700 rounded-lg font-bold text-lg tactile-btn">3</button>
+        <button onclick="keypadPress('4')" class="py-3 bg-white dark:bg-[#2A2624] border border-gray-300 dark:border-gray-700 rounded-lg font-bold text-lg tactile-btn">4</button>
+        <button onclick="keypadPress('5')" class="py-3 bg-white dark:bg-[#2A2624] border border-gray-300 dark:border-gray-700 rounded-lg font-bold text-lg tactile-btn">5</button>
+        <button onclick="keypadPress('6')" class="py-3 bg-white dark:bg-[#2A2624] border border-gray-300 dark:border-gray-700 rounded-lg font-bold text-lg tactile-btn">6</button>
+        <button onclick="keypadPress('7')" class="py-3 bg-white dark:bg-[#2A2624] border border-gray-300 dark:border-gray-700 rounded-lg font-bold text-lg tactile-btn">7</button>
+        <button onclick="keypadPress('8')" class="py-3 bg-white dark:bg-[#2A2624] border border-gray-300 dark:border-gray-700 rounded-lg font-bold text-lg tactile-btn">8</button>
+        <button onclick="keypadPress('9')" class="py-3 bg-white dark:bg-[#2A2624] border border-gray-300 dark:border-gray-700 rounded-lg font-bold text-lg tactile-btn">9</button>
+        <button onclick="keypadPress('.')" class="py-3 bg-white dark:bg-[#2A2624] border border-gray-300 dark:border-gray-700 rounded-lg font-bold text-lg tactile-btn">.</button>
+        <button onclick="keypadPress('0')" class="py-3 bg-white dark:bg-[#2A2624] border border-gray-300 dark:border-gray-700 rounded-lg font-bold text-lg tactile-btn">0</button>
+        <button onclick="keypadPress('DEL')" class="py-3 bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-lg font-bold text-sm tactile-btn"><i class="fa-solid fa-backspace"></i></button>
+      </div>
+
+      <button onclick="confirmKeypadTransaction()" class="w-full py-3 bg-smartisan-red hover:bg-smartisan-redHover text-white font-bold rounded-lg tactile-btn shadow flex items-center justify-center gap-2">
+        <i class="fa-solid fa-check"></i> <span data-i18n="confirmLog">Confirm & Log Expense</span>
+      </button>
     </div>
-
-    <!-- SCRIPT APPLICATION LOGIC -->
-    <script>
-        // --- INITIAL STATE & LOCAL STORAGE DEFAULTS ---
-        const DEFAULT_BLOCK_ORDER = [
-            { id: 'block-voicePill', name: 'Voice & Natural Language', visible: true },
-            { id: 'block-expressBadges', name: '1-Tap Express Quick Log', visible: true },
-            { id: 'block-netWorthAccounts', name: 'Accounts & Net Worth', visible: true },
-            { id: 'block-categoryBudgets', name: 'Category Budgets', visible: true },
-            { id: 'block-analyticsCharts', name: 'Visual Canvas Charts', visible: true },
-            { id: 'block-savingsGoals', name: 'Savings Goals Tracker', visible: true },
-            { id: 'block-transactionHistory', name: 'Transaction History Ledger', visible: true }
-        ];
-
-        const DEFAULT_STATE = {
-            currency: '$',
-            language: 'en',
-            theme: 'classic',
-            layoutOrder: DEFAULT_BLOCK_ORDER,
-            accounts: [
-                { id: 'acc_chase', name: 'Chase Checking', balance: 4250.00, icon: 'fa-landmark' },
-                { id: 'acc_amex', name: 'AMEX Credit', balance: -820.50, icon: 'fa-credit-card' },
-                { id: 'acc_cash', name: 'Physical Cash', balance: 340.00, icon: 'fa-money-bill' }
-            ],
-            categories: [
-                { id: 'cat_food', name: 'Food & Dining', icon: 'fa-utensils', limit: 800 },
-                { id: 'cat_transport', name: 'Transport', icon: 'fa-car', limit: 300 },
-                { id: 'cat_utilities', name: 'Utilities & Bills', icon: 'fa-bolt', limit: 500 },
-                { id: 'cat_shopping', name: 'Shopping', icon: 'fa-bag-shopping', limit: 400 }
-            ],
-            expressBadges: [
-                { id: 'badge_coffee', label: 'Coffee', amount: 5.50, categoryId: 'cat_food', icon: 'fa-mug-hot' },
-                { id: 'badge_subway', label: 'Subway Ride', amount: 2.90, categoryId: 'cat_transport', icon: 'fa-subway' },
-                { id: 'badge_lunch', label: 'Quick Lunch', amount: 15.00, categoryId: 'cat_food', icon: 'fa-burger' },
-                { id: 'badge_groceries', label: 'Groceries', amount: 65.00, categoryId: 'cat_food', icon: 'fa-cart-shopping' }
-            ],
-            transactions: [
-                { id: 'tx_1', date: '2026-10-20', type: 'EXPENSE', amount: 45.00, categoryId: 'cat_food', accountId: 'acc_chase', note: 'Dinner with colleagues' },
-                { id: 'tx_2', date: '2026-10-21', type: 'EXPENSE', amount: 12.50, categoryId: 'cat_transport', accountId: 'acc_amex', note: 'Uber Ride' },
-                { id: 'tx_3', date: '2026-10-22', type: 'INCOME', amount: 2500.00, categoryId: 'cat_utilities', accountId: 'acc_chase', note: 'Salary Direct Deposit' }
-            ],
-            savingsGoals: [
-                { id: 'goal_1', name: 'Japan Trip', target: 3000, current: 1450, icon: 'fa-plane' },
-                { id: 'goal_2', name: 'Tech Upgrade', target: 1200, current: 800, icon: 'fa-laptop' }
-            ]
-        };
-
-        let appData = JSON.parse(localStorage.getItem('smartisan_budget_app')) || DEFAULT_STATE;
-        if (!appData.layoutOrder) appData.layoutOrder = DEFAULT_BLOCK_ORDER;
-
-        let isEditLayoutMode = false;
-
-        function saveData() {
-            localStorage.setItem('smartisan_budget_app', JSON.stringify(appData));
-            renderAll();
-        }
-
-        // --- CHARTS INSTANCES ---
-        let donutChartInstance = null;
-        let barChartInstance = null;
-
-        // --- INITIALIZATION ---
-        window.onload = function() {
-            changeTheme(appData.theme || 'classic');
-            applyLayoutOrder();
-            renderAll();
-            setupDragAndDrop();
-        };
-
-        function renderAll() {
-            renderAccounts();
-            renderExpressBadges();
-            renderCategoryBudgets();
-            renderTransactions();
-            renderSavingsGoals();
-            renderCharts();
-            updateSettingsForms();
-        }
-
-        // --- DYNAMIC BLOCK LAYOUT & DRAG AND DROP ---
-        function applyLayoutOrder() {
-            const container = document.getElementById('dashboardContainer');
-            appData.layoutOrder.forEach(blockInfo => {
-                const el = document.getElementById(blockInfo.id);
-                if (el) {
-                    container.appendChild(el); // Re-append in stored order
-                    if (blockInfo.visible === false) {
-                        el.classList.add('hidden');
-                    } else {
-                        el.classList.remove('hidden');
-                    }
-                }
-            });
-        }
-
-        function toggleEditLayoutMode(forceState) {
-            isEditLayoutMode = forceState !== undefined ? forceState : !isEditLayoutMode;
-            const container = document.getElementById('dashboardContainer');
-            const banner = document.getElementById('layoutEditBanner');
-            const btnText = document.getElementById('editLayoutBtnText');
-
-            if (isEditLayoutMode) {
-                container.classList.add('edit-layout-active');
-                banner.classList.remove('hidden');
-                btnText.innerText = 'Done Editing';
-                document.querySelectorAll('.block-drag-handle').forEach(h => h.classList.remove('hidden'));
-                document.querySelectorAll('.dashboard-block').forEach(b => b.setAttribute('draggable', 'true'));
-            } else {
-                container.classList.remove('edit-layout-active');
-                banner.classList.add('hidden');
-                btnText.innerText = 'Edit Layout';
-                document.querySelectorAll('.block-drag-handle').forEach(h => h.classList.add('hidden'));
-                document.querySelectorAll('.dashboard-block').forEach(b => b.setAttribute('draggable', 'false'));
-            }
-        }
-
-        function moveBlock(blockId, direction) {
-            const idx = appData.layoutOrder.findIndex(b => b.id === blockId);
-            if (idx < 0) return;
-
-            const newIdx = idx + direction;
-            if (newIdx >= 0 && newIdx < appData.layoutOrder.length) {
-                const temp = appData.layoutOrder[idx];
-                appData.layoutOrder[idx] = appData.layoutOrder[newIdx];
-                appData.layoutOrder[newIdx] = temp;
-                applyLayoutOrder();
-                saveData();
-            }
-        }
-
-        function setupDragAndDrop() {
-            const container = document.getElementById('dashboardContainer');
-            let draggedEl = null;
-
-            container.addEventListener('dragstart', (e) => {
-                if (!isEditLayoutMode) return;
-                draggedEl = e.target.closest('.dashboard-block');
-                if (draggedEl) draggedEl.classList.add('dragging');
-            });
-
-            container.addEventListener('dragend', (e) => {
-                if (draggedEl) draggedEl.classList.remove('dragging');
-                draggedEl = null;
-                // Update internal state order based on DOM order
-                const newOrder = [];
-                container.querySelectorAll('.dashboard-block').forEach(el => {
-                    const blockObj = appData.layoutOrder.find(b => b.id === el.id);
-                    if (blockObj) newOrder.push(blockObj);
-                });
-                appData.layoutOrder = newOrder;
-                saveData();
-            });
-
-            container.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                if (!isEditLayoutMode || !draggedEl) return;
-                const afterElement = getDragAfterElement(container, e.clientY);
-                if (afterElement == null) {
-                    container.appendChild(draggedEl);
-                } else {
-                    container.insertBefore(draggedEl, afterElement);
-                }
-            });
-        }
-
-        function getDragAfterElement(container, y) {
-            const draggableElements = [...container.querySelectorAll('.dashboard-block:not(.dragging)')];
-            return draggableElements.reduce((closest, child) => {
-                const box = child.getBoundingClientRect();
-                const offset = y - box.top - box.height / 2;
-                if (offset < 0 && offset > closest.offset) {
-                    return { offset: offset, element: child };
-                } else {
-                    return closest;
-                }
-            }, { offset: Number.NEGATIVE_INFINITY }).element;
-        }
-
-        function resetLayoutOrder() {
-            appData.layoutOrder = JSON.parse(JSON.stringify(DEFAULT_BLOCK_ORDER));
-            applyLayoutOrder();
-            saveData();
-        }
-
-        // --- THEME SWITCHER ---
-        function changeTheme(themeName) {
-            appData.theme = themeName;
-            document.body.className = `theme-${themeName} min-h-screen pb-20`;
-            document.getElementById('themeSelector').value = themeName;
-            localStorage.setItem('smartisan_budget_app', JSON.stringify(appData));
-        }
-
-        function updatePreferences() {
-            appData.currency = document.getElementById('settingCurrency').value;
-            appData.language = document.getElementById('settingLanguage').value;
-            saveData();
-        }
-
-        // --- ACCOUNTS RENDER & CALCULATIONS ---
-        function renderAccounts() {
-            const grid = document.getElementById('accountsListGrid');
-            grid.innerHTML = '';
-
-            let netWorth = 0;
-            appData.accounts.forEach(acc => {
-                netWorth += acc.balance;
-                const card = document.createElement('div');
-                card.className = "p-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center justify-between";
-                card.innerHTML = `
-                    <div class="flex items-center space-x-2.5">
-                        <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-600 flex items-center justify-center">
-                            <i class="fa-solid ${acc.icon}"></i>
-                        </div>
-                        <div>
-                            <div class="font-bold text-xs">${acc.name}</div>
-                            <div class="text-xs font-semibold opacity-80">${appData.currency}${acc.balance.toFixed(2)}</div>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-
-            document.getElementById('netWorthDisplay').innerText = `${appData.currency}${netWorth.toFixed(2)}`;
-
-            let totalInc = 0, totalExp = 0;
-            appData.transactions.forEach(tx => {
-                if (tx.type === 'INCOME') totalInc += tx.amount;
-                if (tx.type === 'EXPENSE') totalExp += tx.amount;
-            });
-            document.getElementById('totalIncomeDisplay').innerText = `${appData.currency}${totalInc.toFixed(2)}`;
-            document.getElementById('totalExpenseDisplay').innerText = `${appData.currency}${totalExp.toFixed(2)}`;
-        }
-
-        // --- 1-TAP EXPRESS BADGES ---
-        function renderExpressBadges() {
-            const container = document.getElementById('expressBadgesContainer');
-            container.innerHTML = '';
-
-            appData.expressBadges.forEach(badge => {
-                const btn = document.createElement('button');
-                btn.className = "tactile-btn px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 flex items-center gap-2 text-xs font-semibold text-amber-800 dark:text-amber-300";
-                btn.onclick = () => logExpressTransaction(badge);
-                btn.innerHTML = `
-                    <i class="fa-solid ${badge.icon || 'fa-bolt'}"></i>
-                    <span>${badge.label} (${appData.currency}${badge.amount})</span>
-                `;
-                container.appendChild(btn);
-            });
-        }
-
-        function logExpressTransaction(badge) {
-            const defaultAcc = appData.accounts[0] ? appData.accounts[0].id : '';
-            const newTx = {
-                id: 'tx_' + Date.now(),
-                date: new Date().toISOString().split('T')[0],
-                type: 'EXPENSE',
-                amount: badge.amount,
-                categoryId: badge.categoryId,
-                accountId: defaultAcc,
-                note: `Express: ${badge.label}`
-            };
-
-            const acc = appData.accounts.find(a => a.id === defaultAcc);
-            if (acc) acc.balance -= badge.amount;
-
-            appData.transactions.unshift(newTx);
-            saveData();
-        }
-
-        // --- CATEGORIES & BUDGET TRACKER ---
-        function renderCategoryBudgets() {
-            const grid = document.getElementById('categoryBudgetsGrid');
-            grid.innerHTML = '';
-
-            appData.categories.forEach(cat => {
-                const spent = appData.transactions
-                    .filter(tx => tx.categoryId === cat.id && tx.type === 'EXPENSE')
-                    .reduce((sum, tx) => sum + tx.amount, 0);
-
-                const percent = Math.min(100, Math.round((spent / (cat.limit || 1)) * 100));
-                let colorClass = "bg-emerald-500";
-                if (percent > 75) colorClass = "bg-amber-500";
-                if (percent > 95) colorClass = "bg-rose-500";
-
-                const card = document.createElement('div');
-                card.className = "p-3.5 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 space-y-2";
-                card.innerHTML = `
-                    <div class="flex items-center justify-between text-xs">
-                        <div class="flex items-center gap-2">
-                            <i class="fa-solid ${cat.icon} text-amber-600"></i>
-                            <span class="font-bold">${cat.name}</span>
-                        </div>
-                        <span class="opacity-70">${appData.currency}${spent.toFixed(0)} / ${appData.currency}${cat.limit}</span>
-                    </div>
-                    <div class="w-full h-2 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
-                        <div class="h-full ${colorClass} transition-all duration-300" style="width: ${percent}%"></div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        // --- TRANSACTIONS LEDGER ---
-        function renderTransactions() {
-            const tbody = document.getElementById('transactionsTableBody');
-            tbody.innerHTML = '';
-
-            const query = document.getElementById('txSearchInput').value.toLowerCase();
-            const filterType = document.getElementById('txFilterType').value;
-
-            const filtered = appData.transactions.filter(tx => {
-                const matchesQuery = tx.note.toLowerCase().includes(query);
-                const matchesType = filterType === 'ALL' || tx.type === filterType;
-                return matchesQuery && matchesType;
-            });
-
-            filtered.forEach(tx => {
-                const cat = appData.categories.find(c => c.id === tx.categoryId) || { name: 'General' };
-                const acc = appData.accounts.find(a => a.id === tx.accountId) || { name: 'Cash' };
-                const isInc = tx.type === 'INCOME';
-
-                const tr = document.createElement('tr');
-                tr.className = "border-b border-black/5 dark:border-white/5 hover:bg-black/5 dark:hover:bg-white/5 transition";
-                tr.innerHTML = `
-                    <td class="py-2.5 px-3 opacity-70">${tx.date}</td>
-                    <td class="py-2.5 px-3 font-semibold">${tx.note}</td>
-                    <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-800 dark:text-amber-300">${cat.name}</span></td>
-                    <td class="py-2.5 px-3 opacity-80">${acc.name}</td>
-                    <td class="py-2.5 px-3 text-right font-bold ${isInc ? 'text-emerald-600' : 'text-rose-600'}">
-                        ${isInc ? '+' : '-'}${appData.currency}${tx.amount.toFixed(2)}
-                    </td>
-                    <td class="py-2.5 px-3 text-center">
-                        <button onclick="deleteTransaction('${tx.id}')" class="text-rose-500 hover:text-rose-700 p-1">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function deleteTransaction(id) {
-            appData.transactions = appData.transactions.filter(t => t.id !== id);
-            saveData();
-        }
-
-        // --- SAVINGS GOALS ---
-        function renderSavingsGoals() {
-            const grid = document.getElementById('savingsGoalsGrid');
-            grid.innerHTML = '';
-
-            appData.savingsGoals.forEach(goal => {
-                const percent = Math.min(100, Math.round((goal.current / goal.target) * 100));
-                const card = document.createElement('div');
-                card.className = "p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 space-y-3";
-                card.innerHTML = `
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2 font-bold text-xs">
-                            <i class="fa-solid ${goal.icon} text-amber-600"></i>
-                            <span>${goal.name}</span>
-                        </div>
-                        <span class="text-xs font-semibold opacity-70">${percent}%</span>
-                    </div>
-                    <div class="w-full h-2 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
-                        <div class="h-full bg-amber-600 transition-all" style="width: ${percent}%"></div>
-                    </div>
-                    <div class="flex items-center justify-between text-xs opacity-80">
-                        <span>${appData.currency}${goal.current} / ${appData.currency}${goal.target}</span>
-                        <div class="flex gap-1">
-                            <button onclick="adjustGoal('${goal.id}', 50)" class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-700 font-bold">+50</button>
-                            <button onclick="adjustGoal('${goal.id}', -50)" class="px-2 py-1 rounded bg-rose-500/20 text-rose-700 font-bold">-50</button>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        // --- ENHANCED NATURAL LANGUAGE PARSER & MULTI-LANGUAGE VOICE ENGINE ---
-        const LANG_SPEECH_MAP = {
-            'en': 'en-US',
-            'zh-CN': 'zh-CN',
-            'zh-TW': 'zh-TW',
-            'es': 'es-ES'
-        };
-
-        const NUMBER_WORDS = {
-            'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10,
-            'eleven': 11, 'twelve': 12, 'thirteen': 13, 'fourteen': 14, 'fifteen': 15, 'sixteen': 16, 'seventeen': 17, 'eighteen': 18, 'nineteen': 19,
-            'twenty': 20, 'thirty': 30, 'forty': 40, 'fifty': 50, 'sixty': 60, 'seventy': 70, 'eighty': 80, 'ninety': 90, 'hundred': 100, 'thousand': 1000,
-            '零': 0, '一': 1, '二': 2, '两': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10, '百': 100, '千': 1000, '万': 10000,
-            'uno': 1, 'dos': 2, 'tres': 3, 'cuatro': 4, 'cinco': 5, 'seis': 6, 'siete': 7, 'ocho': 8, 'nueve': 9, 'diez': 10, 'cien': 100, 'mil': 1000
-        };
-
-        const CATEGORY_KEYWORDS = {
-            'cat_food': ['food', 'lunch', 'dinner', 'breakfast', 'coffee', 'groceries', 'restaurant', 'burger', 'eat', 'meal', '餐饮', '吃饭', '晚餐', '早餐', '午餐', '咖啡', '买菜', '超市', 'comida', 'almuerzo', 'cena', 'desayuno', 'cafe', 'restaurante'],
-            'cat_transport': ['uber', 'taxi', 'subway', 'bus', 'train', 'flight', 'gas', 'fuel', 'parking', 'metro', '打车', '地铁', '公交', '打车费', '加油', '停车', '机票', 'transporte', 'gasolina', 'vuelo', 'estacionamiento'],
-            'cat_utilities': ['utility', 'electric', 'water', 'internet', 'rent', 'bill', 'phone', 'salary', 'income', '水电费', '房租', '网费', '话费', '电费', '工资', '收入', 'luz', 'agua', 'alquiler', 'factura', 'telefono', 'salario'],
-            'cat_shopping': ['shopping', 'clothes', 'amazon', 'shoes', 'electronics', 'gift', '购物', '买衣服', '淘宝', '京东', '鞋子', '礼物', 'compras', 'ropa', 'zapatos', 'regalo']
-        };
-
-        function parseNaturalLanguage(text) {
-            const rawText = text.trim();
-            const lowerText = rawText.toLowerCase();
-
-            // 1. Transaction Type
-            let type = 'EXPENSE';
-            const incomeKeywords = ['salary', 'income', 'earned', 'deposit', 'received', 'got paid', '工资', '收入', '收到', '存入', 'gane', 'salario', 'ingreso', 'deposito'];
-            if (incomeKeywords.some(kw => lowerText.includes(kw))) {
-                type = 'INCOME';
-            }
-
-            // 2. Amount Extraction
-            let amount = null;
-            // Match numeric currency symbols or figures
-            const numMatch = rawText.match(/([\$\¥\€\£]|USD|CNY|EUR)?\s*(\d+(\.\d+)?)/i);
-            if (numMatch) {
-                amount = parseFloat(numMatch[2]);
-            } else {
-                // Word-based number lookup
-                for (const [word, val] of Object.entries(NUMBER_WORDS)) {
-                    if (lowerText.includes(word)) {
-                        amount = val;
-                        break;
-                    }
-                }
-            }
-            if (!amount || isNaN(amount)) amount = 10.00;
-
-            // 3. Date Detection
-            let dateStr = new Date().toISOString().split('T')[0];
-            if (lowerText.includes('yesterday') || lowerText.includes('昨天') || lowerText.includes('ayer')) {
-                const d = new Date();
-                d.setDate(d.getDate() - 1);
-                dateStr = d.toISOString().split('T')[0];
-            } else if (lowerText.includes('tomorrow') || lowerText.includes('明天') || lowerText.includes('manana')) {
-                const d = new Date();
-                d.setDate(d.getDate() + 1);
-                dateStr = d.toISOString().split('T')[0];
-            }
-
-            // 4. Account Matching
-            let matchedAccount = appData.accounts[0] ? appData.accounts[0].id : '';
-            appData.accounts.forEach(acc => {
-                const accNameLower = acc.name.toLowerCase();
-                const cleanAcc = accNameLower.replace(/(checking|credit|card|bank)/g, '').trim();
-                if (lowerText.includes(accNameLower) || (cleanAcc && lowerText.includes(cleanAcc))) {
-                    matchedAccount = acc.id;
-                }
-            });
-
-            // 5. Category Matching
-            let matchedCategory = appData.categories[0] ? appData.categories[0].id : '';
-            let categoryFound = false;
-
-            // First check user custom category names
-            appData.categories.forEach(cat => {
-                if (lowerText.includes(cat.name.toLowerCase())) {
-                    matchedCategory = cat.id;
-                    categoryFound = true;
-                }
-            });
-
-            if (!categoryFound) {
-                for (const [catId, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
-                    if (keywords.some(kw => lowerText.includes(kw))) {
-                        // Check if catId exists in user appData categories
-                        const exists = appData.categories.find(c => c.id === catId);
-                        if (exists) {
-                            matchedCategory = exists.id;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // 6. Note Extraction
-            let note = rawText;
-            // Clean common prefixes or amount figures from note
-            note = note.replace(/([\$\¥\€\£]|USD|CNY|EUR)?\s*\d+(\.\d+)?/gi, '')
-                        .replace(/(spent|paid|for|on|using|with|via|from|spent|花了|支付|用|购买|en|por|con)/gi, '')
-                        .trim();
-            if (!note) note = rawText;
-
-            return {
-                type,
-                amount,
-                categoryId: matchedCategory,
-                accountId: matchedAccount,
-                date: dateStr,
-                note: note.charAt(0).toUpperCase() + note.slice(1)
-            };
-        }
-
-        let pendingParsedTx = null;
-
-        function processNaturalLanguageInput() {
-            const input = document.getElementById('naturalInput');
-            const text = input.value.trim();
-            if (!text) return;
-
-            const parsed = parseNaturalLanguage(text);
-            openVoiceModal(text, parsed);
-            input.value = '';
-        }
-
-        function openVoiceModal(transcript, parsed) {
-            pendingParsedTx = parsed;
-            document.getElementById('voiceModalTranscript').innerText = `"${transcript}"`;
-
-            // Populate category select
-            const catSelect = document.getElementById('vmCategory');
-            catSelect.innerHTML = '';
-            appData.categories.forEach(c => {
-                const opt = document.createElement('option');
-                opt.value = c.id;
-                opt.innerText = c.name;
-                if (c.id === parsed.categoryId) opt.selected = true;
-                catSelect.appendChild(opt);
-            });
-
-            // Populate account select
-            const accSelect = document.getElementById('vmAccount');
-            accSelect.innerHTML = '';
-            appData.accounts.forEach(a => {
-                const opt = document.createElement('option');
-                opt.value = a.id;
-                opt.innerText = a.name;
-                if (a.id === parsed.accountId) opt.selected = true;
-                accSelect.appendChild(opt);
-            });
-
-            document.getElementById('vmType').value = parsed.type;
-            document.getElementById('vmAmount').value = parsed.amount.toFixed(2);
-            document.getElementById('vmDate').value = parsed.date;
-            document.getElementById('vmNote').value = parsed.note;
-
-            document.getElementById('voicePreviewModal').classList.remove('hidden');
-        }
-
-        function closeVoiceModal() {
-            document.getElementById('voicePreviewModal').classList.add('hidden');
-            pendingParsedTx = null;
-        }
-
-        function confirmVoiceTransaction() {
-            const finalTx = {
-                id: 'tx_' + Date.now(),
-                date: document.getElementById('vmDate').value,
-                type: document.getElementById('vmType').value,
-                amount: parseFloat(document.getElementById('vmAmount').value) || 0,
-                categoryId: document.getElementById('vmCategory').value,
-                accountId: document.getElementById('vmAccount').value,
-                note: document.getElementById('vmNote').value || 'Voice Entry'
-            };
-
-            const acc = appData.accounts.find(a => a.id === finalTx.accountId);
-            if (acc) {
-                if (finalTx.type === 'EXPENSE') acc.balance -= finalTx.amount;
-                else acc.balance += finalTx.amount;
-            }
-
-            appData.transactions.unshift(finalTx);
-            saveData();
-            closeVoiceModal();
-        }
-
-        // --- CONTINUOUS SPEECH RECOGNITION ENGINE ---
-        let isRecording = false;
-        let recognition = null;
-        let autoRetryCount = 0;
-
-        function toggleVoiceRecognition() {
-            const micBtn = document.getElementById('voiceMicBtn');
-            const floatMicBtn = document.getElementById('floatingMicBtn');
-            const voiceStatus = document.getElementById('voiceStatus');
-            const voiceStatusText = document.getElementById('voiceStatusText');
-
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                alert("Speech recognition is not supported in this browser. Please use Chrome, Edge, or Safari.");
-                return;
-            }
-
-            if (!isRecording) {
-                try {
-                    recognition = new SpeechRecognition();
-                    const userLang = appData.language || 'en';
-                    recognition.lang = LANG_SPEECH_MAP[userLang] || 'en-US';
-                    recognition.continuous = false;
-                    recognition.interimResults = true;
-
-                    recognition.onstart = function() {
-                        isRecording = true;
-                        micBtn.classList.add('recording-pulse');
-                        floatMicBtn.classList.add('recording-pulse');
-                        voiceStatus.classList.remove('hidden');
-                        voiceStatusText.innerText = `Listening (${recognition.lang})... Speak clearly.`;
-                    };
-
-                    recognition.onresult = function(event) {
-                        let interim = '';
-                        let finalResult = '';
-
-                        for (let i = event.resultIndex; i < event.results.length; ++i) {
-                            if (event.results[i].isFinal) {
-                                finalResult += event.results[i][0].transcript;
-                            } else {
-                                interim += event.results[i][0].transcript;
-                            }
-                        }
-
-                        const naturalInput = document.getElementById('naturalInput');
-                        if (interim) naturalInput.value = interim;
-
-                        if (finalResult) {
-                            naturalInput.value = finalResult;
-                            processNaturalLanguageInput();
-                        }
-                    };
-
-                    recognition.onerror = function(event) {
-                        if (event.error === 'no-speech' && autoRetryCount < 2) {
-                            autoRetryCount++;
-                            recognition.start();
-                        } else {
-                            voiceStatusText.innerText = `Voice Error: ${event.error}`;
-                            setTimeout(() => voiceStatus.classList.add('hidden'), 3000);
-                        }
-                    };
-
-                    recognition.onend = function() {
-                        isRecording = false;
-                        autoRetryCount = 0;
-                        micBtn.classList.remove('recording-pulse');
-                        floatMicBtn.classList.remove('recording-pulse');
-                        voiceStatus.classList.add('hidden');
-                    };
-
-                    recognition.start();
-                } catch (err) {
-                    console.error("Speech Recognition Error: ", err);
-                    isRecording = false;
-                }
-            } else {
-                if (recognition) recognition.stop();
-            }
-        }
-
-        // --- SETTINGS HUB DRAWER MODAL ---
-        function toggleSettingsDrawer(show, openTab = 'layoutTab') {
-            const modal = document.getElementById('settingsModal');
-            if (show) {
-                modal.classList.remove('hidden');
-                switchSettingsTab(openTab);
-            } else {
-                modal.classList.add('hidden');
-            }
-        }
-
-        function switchSettingsTab(tabId) {
-            document.querySelectorAll('.settings-tab-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-
-            document.querySelectorAll('#settingsModal button[id^="btn-"]').forEach(btn => {
-                btn.classList.remove('border-amber-600', 'text-amber-600');
-                btn.classList.add('border-transparent');
-            });
-
-            const activeBtn = document.getElementById(`btn-${tabId}`);
-            if (activeBtn) {
-                activeBtn.classList.add('border-amber-600', 'text-amber-600');
-                activeBtn.classList.remove('border-transparent');
-            }
-        }
-
-        function updateSettingsForms() {
-            document.getElementById('settingCurrency').value = appData.currency || '$';
-            document.getElementById('settingLanguage').value = appData.language || 'en';
-
-            // Layout Settings list
-            const layoutList = document.getElementById('settingsLayoutBlocksList');
-            layoutList.innerHTML = '';
-            appData.layoutOrder.forEach((block, idx) => {
-                const div = document.createElement('div');
-                div.className = "flex items-center justify-between p-2.5 rounded-lg bg-black/5 dark:bg-white/5";
-                div.innerHTML = `
-                    <div class="flex items-center gap-2 font-semibold">
-                        <i class="fa-solid fa-grip-vertical opacity-50"></i>
-                        <span>${block.name}</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <label class="flex items-center gap-1 cursor-pointer">
-                            <input type="checkbox" ${block.visible !== false ? 'checked' : ''} 
-                                onchange="appData.layoutOrder[${idx}].visible = this.checked; saveData(); applyLayoutOrder();">
-                            <span>Show</span>
-                        </label>
-                    </div>
-                `;
-                layoutList.appendChild(div);
-            });
-
-            // Express Badges Settings
-            const expressList = document.getElementById('settingsExpressList');
-            expressList.innerHTML = '';
-            appData.expressBadges.forEach((b, idx) => {
-                const div = document.createElement('div');
-                div.className = "flex items-center gap-2 p-2 rounded-lg bg-black/5 dark:bg-white/5";
-                div.innerHTML = `
-                    <input type="text" value="${b.label}" onchange="appData.expressBadges[${idx}].label = this.value; saveData();" class="p-1 rounded bg-white dark:bg-black/20 w-1/3">
-                    <input type="number" value="${b.amount}" onchange="appData.expressBadges[${idx}].amount = parseFloat(this.value); saveData();" class="p-1 rounded bg-white dark:bg-black/20 w-1/4">
-                    <button onclick="appData.expressBadges.splice(${idx}, 1); saveData();" class="text-rose-500 p-1"><i class="fa-solid fa-trash"></i></button>
-                `;
-                expressList.appendChild(div);
-            });
-
-            // Accounts Settings
-            const accountsList = document.getElementById('settingsAccountsList');
-            accountsList.innerHTML = '';
-            appData.accounts.forEach((acc, idx) => {
-                const div = document.createElement('div');
-                div.className = "flex items-center gap-2 p-2 rounded-lg bg-black/5 dark:bg-white/5";
-                div.innerHTML = `
-                    <input type="text" value="${acc.name}" onchange="appData.accounts[${idx}].name = this.value; saveData();" class="p-1 rounded bg-white dark:bg-black/20 w-1/2">
-                    <input type="number" value="${acc.balance}" onchange="appData.accounts[${idx}].balance = parseFloat(this.value); saveData();" class="p-1 rounded bg-white dark:bg-black/20 w-1/3">
-                    <button onclick="appData.accounts.splice(${idx}, 1); saveData();" class="text-rose-500 p-1"><i class="fa-solid fa-trash"></i></button>
-                `;
-                accountsList.appendChild(div);
-            });
-
-            // Categories Settings
-            const categoriesList = document.getElementById('settingsCategoriesList');
-            categoriesList.innerHTML = '';
-            appData.categories.forEach((cat, idx) => {
-                const div = document.createElement('div');
-                div.className = "flex items-center gap-2 p-2 rounded-lg bg-black/5 dark:bg-white/5";
-                div.innerHTML = `
-                    <input type="text" value="${cat.name}" onchange="appData.categories[${idx}].name = this.value; saveData();" class="p-1 rounded bg-white dark:bg-black/20 w-1/2">
-                    <input type="number" value="${cat.limit}" onchange="appData.categories[${idx}].limit = parseFloat(this.value); saveData();" class="p-1 rounded bg-white dark:bg-black/20 w-1/3">
-                    <button onclick="appData.categories.splice(${idx}, 1); saveData();" class="text-rose-500 p-1"><i class="fa-solid fa-trash"></i></button>
-                `;
-                categoriesList.appendChild(div);
-            });
-        }
-
-        function addNewExpressBadge() {
-            appData.expressBadges.push({
-                id: 'badge_' + Date.now(),
-                label: 'New Badge',
-                amount: 10.00,
-                categoryId: appData.categories[0]?.id || '',
-                icon: 'fa-tag'
-            });
-            saveData();
-        }
-
-        function addNewAccount() {
-            appData.accounts.push({
-                id: 'acc_' + Date.now(),
-                name: 'New Card / Bank',
-                balance: 1000.00,
-                icon: 'fa-credit-card'
-            });
-            saveData();
-        }
-
-        function addNewCategory() {
-            appData.categories.push({
-                id: 'cat_' + Date.now(),
-                name: 'New Category',
-                icon: 'fa-layer-group',
-                limit: 500
-            });
-            saveData();
-        }
-
-        // --- DATA MANAGEMENT ---
-        function exportJSON() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
-            const dlAnchorElem = document.createElement('a');
-            dlAnchorElem.setAttribute("href", dataStr);
-            dlAnchorElem.setAttribute("download", `smartisan_budget_backup_${new Date().toISOString().split('T')[0]}.json`);
-            dlAnchorElem.click();
-        }
-
-        function exportCSV() {
-            let csv = "Date,Type,Amount,Category,Account,Note\n";
-            appData.transactions.forEach(tx => {
-                const cat = appData.categories.find(c => c.id === tx.categoryId)?.name || '';
-                const acc = appData.accounts.find(a => a.id === tx.accountId)?.name || '';
-                csv += `"${tx.date}","${tx.type}",${tx.amount},"${cat}","${acc}","${tx.note}"\n`;
-            });
-
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.setAttribute('href', url);
-            a.setAttribute('download', `smartisan_transactions_${new Date().toISOString().split('T')[0]}.csv`);
-            a.click();
-        }
-
-        function importJSON(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const parsed = JSON.parse(e.target.result);
-                    if (parsed && parsed.accounts && parsed.transactions) {
-                        appData = parsed;
-                        saveData();
-                        alert("Data imported successfully!");
-                    } else {
-                        alert("Invalid JSON format for Smartisan App.");
-                    }
-                } catch (err) {
-                    alert("Error parsing JSON file.");
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function confirmResetAllData() {
-            if (confirm("Are you sure you want to permanently reset all data to default values? This cannot be undone.")) {
-                appData = JSON.parse(JSON.stringify(DEFAULT_STATE));
-                saveData();
-                toggleSettingsDrawer(false);
-            }
-        }
-
-        // --- HTML5 CANVAS CHARTS ---
-        function renderCharts() {
-            const donutCtx = document.getElementById('expenseDonutChart').getContext('2d');
-            const barCtx = document.getElementById('incomeExpenseBarChart').getContext('2d');
-
-            if (donutChartInstance) donutChartInstance.destroy();
-            if (barChartInstance) barChartInstance.destroy();
-
-            const catMap = {};
-            appData.transactions.filter(t => t.type === 'EXPENSE').forEach(tx => {
-                const cat = appData.categories.find(c => c.id === tx.categoryId)?.name || 'Other';
-                catMap[cat] = (catMap[cat] || 0) + tx.amount;
-            });
-
-            donutChartInstance = new Chart(donutCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(catMap),
-                    datasets: [{
-                        data: Object.values(catMap),
-                        backgroundColor: ['#d97706', '#059669', '#2563eb', '#dc2626', '#8b5cf6', '#ec4899']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'bottom' } }
-                }
-            });
-
-            let incTotal = 0, expTotal = 0;
-            appData.transactions.forEach(tx => {
-                if (tx.type === 'INCOME') incTotal += tx.amount;
-                if (tx.type === 'EXPENSE') expTotal += tx.amount;
-            });
-
-            barChartInstance = new Chart(barCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Income', 'Expense'],
-                    datasets: [{
-                        label: 'Amount',
-                        data: [incTotal, expTotal],
-                        backgroundColor: ['#10b981', '#f43f5e']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } }
-                }
-            });
-        }
-    </script>
+  </div>
+
+  <!-- Edit Preset Items Modal -->
+  <div id="editPresetsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-smartisan-paper dark:bg-smartisan-paperDark w-full max-w-sm rounded-xl border border-smartisan-borderLight dark:border-smartisan-borderDark p-4 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b pb-2">
+        <h3 class="font-bold text-sm" data-i18n="editPresetsTitle">Configure Item Presets</h3>
+        <button onclick="closeEditPresetsModal()" class="text-gray-400 text-lg">&times;</button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="text-xs font-bold text-gray-500">Item Title</label>
+          <input type="text" id="newPresetName" placeholder="e.g. Lunch" class="w-full text-xs p-2 rounded border bg-white dark:bg-[#252220]">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-xs font-bold text-gray-500">Icon (Emoji)</label>
+            <input type="text" id="newPresetIcon" placeholder="🍱" class="w-full text-xs p-2 rounded border bg-white dark:bg-[#252220]">
+          </div>
+          <div>
+            <label class="text-xs font-bold text-gray-500">Category</label>
+            <select id="newPresetCategory" class="w-full text-xs p-2 rounded border bg-white dark:bg-[#252220]">
+              <option value="Food & Dining">Food & Dining</option>
+              <option value="Transportation">Transportation</option>
+              <option value="Groceries">Groceries</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Bills & Utilities">Bills & Utilities</option>
+              <option value="Entertainment">Entertainment</option>
+            </select>
+          </div>
+        </div>
+        <button onclick="addCustomPreset()" class="w-full py-2 bg-emerald-600 text-white rounded font-bold text-xs tactile-btn">
+          + Add New Preset
+        </button>
+      </div>
+
+      <div class="border-t pt-2 max-h-40 overflow-y-auto space-y-1.5" id="presetItemsManageList">
+        <!-- Render existing items to delete if needed -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-smartisan-paper dark:bg-smartisan-paperDark w-full max-w-sm rounded-xl border border-smartisan-borderLight dark:border-smartisan-borderDark p-4 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b pb-2">
+        <h3 class="font-bold text-sm" data-i18n="settings">Settings</h3>
+        <button onclick="closeSettings()" class="text-gray-400 text-lg">&times;</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-gray-500 mb-1" data-i18n="language">Language</label>
+          <select id="langSelect" onchange="changeLanguage(this.value)" class="w-full p-2 rounded border bg-white dark:bg-[#252220]">
+            <option value="en">English</option>
+            <option value="zh-CN">简体中文</option>
+            <option value="zh-TW">繁體中文</option>
+            <option value="es">Español</option>
+          </select>
+        </div>
+
+        <div class="pt-2 border-t">
+          <label class="block font-bold text-gray-500 mb-1" data-i18n="dataManagement">Data Backup & Restore</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="exportDataJSON()" class="py-2 bg-blue-600 text-white rounded font-bold tactile-btn">
+              <i class="fa-solid fa-download"></i> Export JSON
+            </button>
+            <button onclick="triggerImportJSON()" class="py-2 bg-gray-600 text-white rounded font-bold tactile-btn">
+              <i class="fa-solid fa-upload"></i> Import JSON
+            </button>
+            <input type="file" id="importFileInput" onchange="importDataJSON(event)" class="hidden" accept=".json">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript App Logic -->
+  <script>
+    // --- APP STATE ---
+    let appState = {
+      language: 'en',
+      theme: 'light',
+      accounts: [
+        { id: 'acc_1', name: 'Chase Checking', balance: 2450.00, type: 'checking' },
+        { id: 'acc_2', name: 'Amex Savings', balance: 8200.00, type: 'savings' },
+        { id: 'acc_3', name: 'Cash', balance: 180.00, type: 'cash' }
+      ],
+      quickPresets: [
+        { id: 'p1', title: 'Coffee', icon: '☕', category: 'Food & Dining' },
+        { id: 'p2', title: 'Meal / Dining', icon: '🍔', category: 'Food & Dining' },
+        { id: 'p3', title: 'Gasoline', icon: '⛽', category: 'Transportation' },
+        { id: 'p4', title: 'Groceries', icon: '🛒', category: 'Groceries' },
+        { id: 'p5', title: 'Shopping', icon: '🛍️', category: 'Shopping' },
+        { id: 'p6', title: 'Movie / Fun', icon: '🎬', category: 'Entertainment' },
+        { id: 'p7', title: 'Bus / Subway', icon: '🚌', category: 'Transportation' },
+        { id: 'p8', title: 'Utility Bill', icon: '💡', category: 'Bills & Utilities' }
+      ],
+      categoryLimits: {
+        'Food & Dining': 500,
+        'Transportation': 200,
+        'Groceries': 400,
+        'Shopping': 300,
+        'Bills & Utilities': 600,
+        'Entertainment': 150
+      },
+      transactions: [
+        { id: 'tx1', title: 'Coffee', amount: 4.50, category: 'Food & Dining', accountId: 'acc_1', date: new Date().toISOString().split('T')[0], type: 'expense' },
+        { id: 'tx2', title: 'Gasoline', amount: 35.00, category: 'Transportation', accountId: 'acc_1', date: new Date().toISOString().split('T')[0], type: 'expense' }
+      ]
+    };
+
+    let activePreset = null;
+    let currentKeypadValue = "0";
+
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      loadLocalStorage();
+      renderAll();
+    });
+
+    function saveState() {
+      localStorage.setItem('smartisan_ledger_state', JSON.stringify(appState));
+    }
+
+    function loadLocalStorage() {
+      const saved = localStorage.getItem('smartisan_ledger_state');
+      if (saved) {
+        try {
+          appState = { ...appState, ...JSON.parse(saved) };
+        } catch(e) { console.error('Error loading state', e); }
+      }
+    }
+
+    // --- RENDER FUNCTIONS ---
+    function renderAll() {
+      renderPresets();
+      renderAccounts();
+      renderCategoryBudgets();
+      renderTransactions();
+      renderAnalytics();
+    }
+
+    // Render Quick Item Presets
+    function renderPresets() {
+      const container = document.getElementById('quickItemsContainer');
+      container.innerHTML = appState.quickPresets.map(preset => `
+        <button onclick="openQuickAmountModal('${preset.id}')" 
+          class="flex flex-col items-center justify-center p-2.5 bg-white dark:bg-[#252220] border border-gray-200 dark:border-gray-700/80 rounded-xl tactile-btn shadow-sm text-center">
+          <span class="text-2xl mb-1">${preset.icon}</span>
+          <span class="text-[11px] font-bold text-gray-800 dark:text-gray-200 truncate w-full">${preset.title}</span>
+          <span class="text-[9px] text-gray-400 truncate w-full">${preset.category}</span>
+        </button>
+      `).join('');
+    }
+
+    // Keypad & Preset Modal Logic
+    function openQuickAmountModal(presetId) {
+      activePreset = appState.quickPresets.find(p => p.id === presetId);
+      if (!activePreset) return;
+
+      document.getElementById('modalItemIcon').innerText = activePreset.icon;
+      document.getElementById('modalItemTitle').innerText = activePreset.title;
+      document.getElementById('modalItemCategory').innerText = activePreset.category;
+
+      currentKeypadValue = "0";
+      updateKeypadDisplay();
+
+      // Populate accounts dropdown
+      const select = document.getElementById('keypadAccountSelect');
+      select.innerHTML = appState.accounts.map(acc => `
+        <option value="${acc.id}">${acc.name} ($${acc.balance.toFixed(2)})</option>
+      `).join('');
+
+      document.getElementById('quickAmountModal').classList.remove('hidden');
+    }
+
+    function closeQuickAmountModal() {
+      document.getElementById('quickAmountModal').classList.add('hidden');
+      activePreset = null;
+    }
+
+    function keypadPress(val) {
+      if (val === 'DEL') {
+        currentKeypadValue = currentKeypadValue.length > 1 ? currentKeypadValue.slice(0, -1) : "0";
+      } else if (val === '.') {
+        if (!currentKeypadValue.includes('.')) currentKeypadValue += '.';
+      } else {
+        if (currentKeypadValue === "0") currentKeypadValue = val;
+        else currentKeypadValue += val;
+      }
+      updateKeypadDisplay();
+    }
+
+    function updateKeypadDisplay() {
+      document.getElementById('keypadDisplay').innerText = currentKeypadValue;
+    }
+
+    function confirmKeypadTransaction() {
+      const amount = parseFloat(currentKeypadValue);
+      if (isNaN(amount) || amount <= 0) {
+        alert("Please enter a valid amount.");
+        return;
+      }
+
+      const accountId = document.getElementById('keypadAccountSelect').value;
+      const account = appState.accounts.find(a => a.id === accountId);
+
+      // Create transaction
+      const newTx = {
+        id: 'tx_' + Date.now(),
+        title: activePreset.title,
+        amount: amount,
+        category: activePreset.category,
+        accountId: accountId,
+        date: new Date().toISOString().split('T')[0],
+        type: 'expense'
+      };
+
+      // Deduct account balance
+      if (account) {
+        account.balance -= amount;
+      }
+
+      appState.transactions.unshift(newTx);
+      saveState();
+      renderAll();
+      closeQuickAmountModal();
+    }
+
+    // Accounts Render
+    function renderAccounts() {
+      const container = document.getElementById('accountsList');
+      let total = 0;
+
+      container.innerHTML = appState.accounts.map(acc => {
+        total += acc.balance;
+        return `
+          <div class="min-w-[130px] p-2.5 bg-white dark:bg-[#252220] border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
+            <div class="text-[10px] text-gray-400 font-medium truncate">${acc.name}</div>
+            <div class="text-sm font-bold text-gray-800 dark:text-gray-100">$${acc.balance.toFixed(2)}</div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('netWorthDisplay').innerText = `$${total.toFixed(2)}`;
+    }
+
+    // Category Budgets
+    function renderCategoryBudgets() {
+      const container = document.getElementById('categoryBudgetsContainer');
+      const currentMonth = new Date().toISOString().slice(0, 7);
+
+      container.innerHTML = Object.entries(appState.categoryLimits).map(([cat, limit]) => {
+        const spent = appState.transactions
+          .filter(t => t.category === cat && t.date.startsWith(currentMonth) && t.type === 'expense')
+          .reduce((sum, t) => sum + t.amount, 0);
+        
+        const pct = Math.min(100, Math.round((spent / limit) * 100));
+        let colorClass = 'bg-emerald-500';
+        if (pct > 80) colorClass = 'bg-amber-500';
+        if (pct >= 100) colorClass = 'bg-red-500';
+
+        return `
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="font-medium">${cat}</span>
+              <span class="text-gray-500">$${spent.toFixed(0)} / $${limit}</span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded-full overflow-hidden">
+              <div class="${colorClass} h-full transition-all duration-300" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Transaction History
+    function renderTransactions() {
+      const container = document.getElementById('transactionHistoryList');
+      container.innerHTML = appState.transactions.map(tx => `
+        <div class="flex items-center justify-between p-2 bg-white dark:bg-[#252220] border border-gray-200 dark:border-gray-700/60 rounded-lg text-xs">
+          <div>
+            <div class="font-bold">${tx.title}</div>
+            <div class="text-[10px] text-gray-400">${tx.category} • ${tx.date}</div>
+          </div>
+          <div class="font-black ${tx.type === 'expense' ? 'text-red-500' : 'text-emerald-500'}">
+            ${tx.type === 'expense' ? '-' : '+'}$${tx.amount.toFixed(2)}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Simple Canvas Analytics Chart
+    function renderAnalytics() {
+      const canvas = document.getElementById('categoryPieChart');
+      const ctx = canvas.getContext('2d');
+      canvas.width = 200;
+      canvas.height = 200;
+
+      const totals = {};
+      appState.transactions.forEach(t => {
+        if (t.type === 'expense') totals[t.category] = (totals[t.category] || 0) + t.amount;
+      });
+
+      const totalSpent = Object.values(totals).reduce((a, b) => a + b, 0);
+      if (totalSpent === 0) {
+        ctx.fillStyle = '#888';
+        ctx.font = '12px sans-serif';
+        ctx.fillText('No expenses yet', 55, 105);
+        return;
+      }
+
+      const colors = ['#C23A2B', '#D4AF37', '#2563EB', '#10B981', '#8B5CF6', '#F59E0B'];
+      let startAngle = 0;
+      let i = 0;
+
+      Object.entries(totals).forEach(([cat, amt]) => {
+        const sliceAngle = (amt / totalSpent) * 2 * Math.PI;
+        ctx.beginPath();
+        ctx.arc(100, 100, 70, startAngle, startAngle + sliceAngle);
+        ctx.lineTo(100, 100);
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.fill();
+        startAngle += sliceAngle;
+        i++;
+      });
+    }
+
+    // Natural Language Parser Input
+    function parseAndAddNLP() {
+      const input = document.getElementById('nlpInput').value.trim();
+      if (!input) return;
+
+      const matchAmount = input.match(/\d+(\.\d+)?/);
+      const amount = matchAmount ? parseFloat(matchAmount[0]) : 0;
+      const title = input.replace(/\d+(\.\d+)?/, '').trim() || 'Expense';
+
+      if (amount > 0) {
+        appState.transactions.unshift({
+          id: 'tx_' + Date.now(),
+          title: title,
+          amount: amount,
+          category: 'Food & Dining',
+          accountId: appState.accounts[0].id,
+          date: new Date().toISOString().split('T')[0],
+          type: 'expense'
+        });
+        if (appState.accounts[0]) appState.accounts[0].balance -= amount;
+        saveState();
+        renderAll();
+        document.getElementById('nlpInput').value = '';
+      }
+    }
+
+    // Voice Input Toggle Placeholder
+    function startVoiceRecognition() {
+      alert("Voice recognition initialized. Speak 'Coffee 5 dollars'");
+    }
+
+    // Settings Modal
+    function openSettings() { document.getElementById('settingsModal').classList.remove('hidden'); }
+    function closeSettings() { document.getElementById('settingsModal').classList.add('hidden'); }
+
+    // Theme Toggle
+    function toggleTheme() {
+      document.documentElement.classList.toggle('dark');
+    }
+  </script>
 </body>
 </html>
