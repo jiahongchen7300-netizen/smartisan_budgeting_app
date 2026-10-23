@@ -11,6 +11,7 @@
       --paper-ivory: #fbf7ee;
       --text-dark: #2c2520;
       --accent-red: #d32f2f;
+      --accent-green: #2e7d32;
       --accent-brass: #d4af37;
       --border-stitched: #4a382c;
       --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -98,34 +99,34 @@
       font-weight: bold;
     }
 
-    /* Floating Voice Pill */
+    /* Prominent Ledger Floating Voice Pill */
     .pill-floating {
       position: fixed;
       right: 12px;
-      top: 35%;
-      background: rgba(43, 31, 23, 0.94);
+      top: 32%;
+      background: rgba(43, 31, 23, 0.95);
       border: 2px solid var(--accent-brass);
-      border-radius: 24px;
-      padding: 8px 10px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      border-radius: 28px;
+      padding: 10px 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 8px;
       z-index: 1000;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(6px);
     }
 
     .mic-btn {
-      width: 48px;
-      height: 48px;
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
       background: var(--accent-red);
       color: white;
-      border: 2px solid #fff;
-      font-size: 20px;
+      border: 2.5px solid #fff;
+      font-size: 22px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(211, 47, 47, 0.5);
+      box-shadow: 0 4px 14px rgba(211, 47, 47, 0.6);
       transition: transform 0.2s;
       display: flex;
       align-items: center;
@@ -138,28 +139,29 @@
     }
 
     @keyframes pulse {
-      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,23,68, 0.7); }
-      70% { transform: scale(1.12); box-shadow: 0 0 0 14px rgba(255,23,68, 0); }
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,23,68, 0.8); }
+      70% { transform: scale(1.15); box-shadow: 0 0 0 16px rgba(255,23,68, 0); }
       100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,23,68, 0); }
     }
 
     .voice-feedback {
-      background: #151515;
+      background: #111;
       color: #00ffcc;
       font-family: monospace;
       font-size: 0.75rem;
       padding: 6px 8px;
       border-radius: 6px;
-      max-width: 130px;
+      max-width: 140px;
       word-wrap: break-word;
       display: none;
+      border: 1px solid #333;
     }
 
-    /* Cards & Reorderable Blocks */
+    /* Cards & Reorderable Dashboard Blocks */
     .card {
       margin: 14px;
       padding: 14px;
-      background: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.65);
       border: 1px solid #dcd4c4;
       border-radius: 10px;
       box-shadow: 0 3px 8px rgba(0,0,0,0.04);
@@ -196,7 +198,7 @@
       background: #eee;
       border: 1px solid #aaa;
       border-radius: 4px;
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       padding: 2px 6px;
       cursor: pointer;
     }
@@ -248,15 +250,32 @@
     .tx-item {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       padding: 8px 0;
       border-bottom: 1px dashed #ddd;
       font-size: 0.85rem;
     }
 
     .tx-amount.expense { color: var(--accent-red); font-weight: bold; }
-    .tx-amount.income { color: #2e7d32; font-weight: bold; }
+    .tx-amount.income { color: var(--accent-green); font-weight: bold; }
 
-    /* Modal */
+    /* Progress Bars */
+    .progress-bg {
+      background: #e0e0e0;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent-green);
+      transition: width 0.3s;
+    }
+    .progress-fill.warn { background: #f57c00; }
+    .progress-fill.danger { background: var(--accent-red); }
+
+    /* Settings Modal */
     .modal {
       display: none;
       position: fixed;
@@ -273,7 +292,7 @@
       padding: 20px;
       border-radius: 10px;
       width: 90%;
-      max-width: 400px;
+      max-width: 420px;
       border: 2px solid var(--accent-brass);
       max-height: 85vh;
       overflow-y: auto;
@@ -297,19 +316,19 @@
       </div>
     </div>
 
-    <!-- Floating Voice Pill -->
+    <!-- Floating Voice Pill Widget -->
     <div class="pill-floating">
       <button class="mic-btn" id="micBtn" onclick="toggleVoiceRecognition()" title="Voice Express Log">🎙️</button>
       <div class="voice-feedback" id="voiceFeedback">Listening...</div>
     </div>
 
-    <!-- Dynamic Dashboard Blocks Container -->
+    <!-- Reorderable Block Container -->
     <div id="blocksContainer">
 
-      <!-- Block 1: Express Log -->
+      <!-- Block 1: Express Log & Voice Parser -->
       <div class="card" data-block-id="expressLog">
         <div class="card-title">
-          <span>EXPRESS LOG & PARSER</span>
+          <span>EXPRESS LOG & VOICE PARSER</span>
           <div class="block-controls">
             <button class="btn-arrow" onclick="moveBlock('expressLog', -1)">▲</button>
             <button class="btn-arrow" onclick="moveBlock('expressLog', 1)">▼</button>
@@ -319,6 +338,7 @@
           <input type="text" id="expressInput" placeholder="e.g. Lunch 15.50 Chase or 午餐 45 追溯" onkeypress="handleKeyPress(event)">
           <button class="btn-primary" onclick="parseAndAdd()">Add</button>
         </div>
+        <div id="voiceStatusText" style="font-size: 0.75rem; color: #777;">Tip: Speak or type transaction + amount + account</div>
       </div>
 
       <!-- Block 2: 1-Tap Express Badges -->
@@ -333,10 +353,10 @@
         <div class="badge-grid" id="badgeGrid"></div>
       </div>
 
-      <!-- Block 3: Bank Accounts -->
+      <!-- Block 3: Bank Accounts & Asset Ledger -->
       <div class="card" data-block-id="bankAccounts">
         <div class="card-title">
-          <span>BANK & ASSET ACCOUNTS</span>
+          <span>BANK ACCOUNTS & ASSETS</span>
           <div class="block-controls">
             <button class="btn-arrow" onclick="moveBlock('bankAccounts', -1)">▲</button>
             <button class="btn-arrow" onclick="moveBlock('bankAccounts', 1)">▼</button>
@@ -345,7 +365,19 @@
         <div id="accountList"></div>
       </div>
 
-      <!-- Block 4: Analytics -->
+      <!-- Block 4: Category Monthly Budget Progress -->
+      <div class="card" data-block-id="budgets">
+        <div class="card-title">
+          <span>CATEGORY MONTHLY BUDGETS</span>
+          <div class="block-controls">
+            <button class="btn-arrow" onclick="moveBlock('budgets', -1)">▲</button>
+            <button class="btn-arrow" onclick="moveBlock('budgets', 1)">▼</button>
+          </div>
+        </div>
+        <div id="budgetList"></div>
+      </div>
+
+      <!-- Block 5: Interactive Visual Analytics -->
       <div class="card" data-block-id="analytics">
         <div class="card-title">
           <span>VISUAL ANALYTICS</span>
@@ -357,7 +389,7 @@
         <canvas id="chartCanvas"></canvas>
       </div>
 
-      <!-- Block 5: Transaction History -->
+      <!-- Block 6: Transaction History -->
       <div class="card" data-block-id="txHistory">
         <div class="card-title">
           <span>RECENT TRANSACTIONS</span>
@@ -372,11 +404,12 @@
     </div>
   </div>
 
-  <!-- Settings Modal -->
+  <!-- Comprehensive Settings Modal -->
   <div class="modal" id="settingsModal">
     <div class="modal-content">
-      <h3>App Settings</h3>
-      <label>Language:</label>
+      <h3>App Settings & Customization</h3>
+      
+      <label>Language Engine:</label>
       <select id="settingLang" onchange="updateSettings()" style="margin-bottom:12px;">
         <option value="en-US">English</option>
         <option value="zh-CN">简体中文</option>
@@ -384,16 +417,18 @@
         <option value="es-ES">Español</option>
       </select>
 
-      <label>Theme:</label>
+      <label>Skeuomorphic Theme:</label>
       <select id="settingTheme" onchange="updateSettings()" style="margin-bottom:12px;">
-        <option value="default">Wood & Leather</option>
+        <option value="default">Classic Wood & Leather</option>
         <option value="dark">Obsidian Dark</option>
         <option value="ivory">Warm Ivory</option>
         <option value="mahogany">Vintage Mahogany</option>
       </select>
 
       <hr style="margin:16px 0;">
-      <button class="btn-primary" onclick="exportData()" style="width:100%; margin-bottom:8px;">Export Backup (JSON)</button>
+      <h4>Data Management</h4>
+      <button class="btn-primary" onclick="exportData('json')" style="width:100%; margin-bottom:8px;">Export JSON Backup</button>
+      <button class="btn-primary" onclick="exportData('csv')" style="width:100%; margin-bottom:12px;">Export CSV Spreadsheet</button>
       <button class="btn-primary" onclick="closeSettings()" style="width:100%; background:#666; border-color:#666;">Close</button>
     </div>
   </div>
@@ -402,11 +437,17 @@
     let state = {
       language: localStorage.getItem('app_lang') || 'en-US',
       theme: localStorage.getItem('app_theme') || 'default',
-      blockOrder: JSON.parse(localStorage.getItem('app_blocks')) || ['expressLog', 'quickBadges', 'bankAccounts', 'analytics', 'txHistory'],
+      blockOrder: JSON.parse(localStorage.getItem('app_blocks')) || ['expressLog', 'quickBadges', 'bankAccounts', 'budgets', 'analytics', 'txHistory'],
       accounts: JSON.parse(localStorage.getItem('app_accounts')) || [
         { name: 'Chase Checking', balance: 4250.00 },
         { name: 'Amex Savings', balance: 12800.00 },
         { name: 'Cash', balance: 340.00 }
+      ],
+      categories: JSON.parse(localStorage.getItem('app_categories')) || [
+        { name: 'Food & Dining', limit: 600 },
+        { name: 'Transportation', limit: 250 },
+        { name: 'Housing', limit: 1400 },
+        { name: 'Shopping', limit: 300 }
       ],
       badges: JSON.parse(localStorage.getItem('app_badges')) || [
         { name: 'Coffee', amount: 5.00 },
@@ -468,25 +509,36 @@
       });
     }
 
-    // Voice & Parsing Engine
+    // Advanced Voice & Multi-Language Natural Language Parser Engine
     function parseNaturalLanguage(text) {
       const lower = text.toLowerCase().trim();
+      
+      // 1. Regex Amount extraction (handles $, ￥, €, 元, 块)
       const amountMatch = lower.match(/(?:[\$￥€]?\s*)(\d+(?:\.\d{1,2})?)/);
       const amount = amountMatch ? parseFloat(amountMatch[1]) : 0;
 
+      // 2. Intent Detection
       let type = 'expense';
-      if (/salary|income|deposit|received|收入|发工资|存入/i.test(lower)) type = 'income';
+      if (/salary|income|deposit|received|收入|发工资|存入|进账/i.test(lower)) {
+        type = 'income';
+      }
 
+      // 3. Account Linkage
       let account = state.accounts[0].name;
-      if (/amex|savings|储蓄/i.test(lower)) account = state.accounts[1]?.name || account;
+      if (/amex|savings|储蓄|运通/i.test(lower)) account = state.accounts[1]?.name || account;
       else if (/cash|现金/i.test(lower)) account = state.accounts[2]?.name || account;
 
+      // 4. Category Linkage
       let category = 'Food & Dining';
-      if (/uber|gas|transport|taxi|打车|加油/i.test(lower)) category = 'Transportation';
+      if (/uber|gas|transport|taxi|打车|加油|交通/i.test(lower)) category = 'Transportation';
       else if (/rent|utility|house|房租|水电/i.test(lower)) category = 'Housing';
-      else if (/shop|store|amazon|购物/i.test(lower)) category = 'Shopping';
+      else if (/shop|store|amazon|购物|买/i.test(lower)) category = 'Shopping';
 
-      let title = text.replace(/(?:[\$￥€]?\s*)(\d+(?:\.\d{1,2})?)/g, '').trim() || category;
+      // 5. Clean Title / Note Extraction
+      let title = text.replace(/(?:[\$￥€]?\s*)(\d+(?:\.\d{1,2})?)/g, '')
+                      .replace(/chase|amex|cash|savings|追溯|现金|收入|支出/gi, '')
+                      .trim();
+      if (!title) title = category;
 
       return { amount, type, category, account, title };
     }
@@ -508,7 +560,7 @@
         date: new Date().toLocaleDateString()
       });
 
-      // Update Bank Balance
+      // Live Bank Balance Sync
       const acc = state.accounts.find(a => a.name === parsed.account);
       if (acc) {
         acc.balance += parsed.type === 'income' ? parsed.amount : -parsed.amount;
@@ -529,52 +581,89 @@
       if (e.key === 'Enter') parseAndAdd();
     }
 
-    // WebSpeech Integration
+    // High-Precision WebSpeech API Engine
     let recognition = null;
     let isListening = false;
 
     function toggleVoiceRecognition() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) return alert("Speech recognition not supported");
+      if (!SpeechRecognition) return alert("Speech recognition is not supported on this browser.");
 
       const micBtn = document.getElementById('micBtn');
       const feedback = document.getElementById('voiceFeedback');
+      const statusText = document.getElementById('voiceStatusText');
 
       if (isListening) { recognition.stop(); return; }
 
       recognition = new SpeechRecognition();
       recognition.lang = state.language;
       recognition.interimResults = true;
+      recognition.continuous = false;
 
       recognition.onstart = () => {
         isListening = true;
         micBtn.classList.add('listening');
         feedback.style.display = 'block';
+        feedback.innerText = 'Listening...';
+        if (statusText) statusText.innerText = 'Listening... speak now';
       };
 
       recognition.onresult = (e) => {
-        const text = e.results[0][0].transcript;
-        feedback.innerText = text;
-        document.getElementById('expressInput').value = text;
+        let transcript = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+          transcript += e.results[i][0].transcript;
+        }
+        feedback.innerText = transcript;
+        document.getElementById('expressInput').value = transcript;
+
         if (e.results[0].isFinal) {
-          setTimeout(() => { parseAndAdd(); }, 300);
+          if (statusText) statusText.innerText = 'Processing...';
+          setTimeout(() => {
+            parseAndAdd();
+            if (statusText) statusText.innerText = 'Logged successfully!';
+          }, 350);
         }
       };
 
+      recognition.onerror = (e) => {
+        if (statusText) statusText.innerText = 'Voice recognition error';
+        stopListening();
+      };
+
       recognition.onend = () => {
-        isListening = false;
-        micBtn.classList.remove('listening');
-        feedback.style.display = 'none';
+        stopListening();
       };
 
       recognition.start();
     }
 
-    function exportData() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+    function stopListening() {
+      isListening = false;
+      const micBtn = document.getElementById('micBtn');
+      const feedback = document.getElementById('voiceFeedback');
+      if (micBtn) micBtn.classList.remove('listening');
+      if (feedback) feedback.style.display = 'none';
+    }
+
+    function exportData(format) {
+      let content = '';
+      let mime = '';
+      let ext = '';
+
+      if (format === 'json') {
+        content = JSON.stringify(state, null, 2);
+        mime = 'data:text/json;charset=utf-8,';
+        ext = 'json';
+      } else {
+        content = "Date,Title,Amount,Type,Category,Account\n" + 
+          state.transactions.map(t => `"${t.date}","${t.title}",${t.amount},"${t.type}","${t.category}","${t.account}"`).join("\n");
+        mime = 'data:text/csv;charset=utf-8,';
+        ext = 'csv';
+      }
+
       const anchor = document.createElement('a');
-      anchor.setAttribute("href", dataStr);
-      anchor.setAttribute("download", "smartisan_budget_backup.json");
+      anchor.setAttribute("href", mime + encodeURIComponent(content));
+      anchor.setAttribute("download", `smartisan_budget_export.${ext}`);
       document.body.appendChild(anchor);
       anchor.click();
       anchor.remove();
@@ -582,13 +671,13 @@
 
     function drawChart() {
       const canvas = document.getElementById('chartCanvas');
+      if (!canvas) return;
       const ctx = canvas.getContext('2d');
       canvas.width = canvas.parentElement.clientWidth - 28;
       canvas.height = 150;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Simple Canvas Bar Visual
       const totalExpense = state.transactions.filter(t => t.type === 'expense').reduce((s,t) => s + t.amount, 0);
       const totalIncome = state.transactions.filter(t => t.type === 'income').reduce((s,t) => s + t.amount, 0);
 
@@ -601,12 +690,14 @@
       ctx.fillRect(60, 120 - incBarHeight, 50, incBarHeight);
       ctx.fillStyle = '#888';
       ctx.font = '12px sans-serif';
-      ctx.fillText('Income', 65, 140);
+      ctx.fillText('Income', 62, 140);
+      ctx.fillText(`$${totalIncome.toFixed(0)}`, 62, 115 - incBarHeight);
 
       // Expense Bar
       ctx.fillStyle = '#d32f2f';
-      ctx.fillRect(160, 120 - expBarHeight, 50, expBarHeight);
-      ctx.fillText('Expense', 160, 140);
+      ctx.fillRect(170, 120 - expBarHeight, 50, expBarHeight);
+      ctx.fillText('Expense', 170, 140);
+      ctx.fillText(`$${totalExpense.toFixed(0)}`, 170, 115 - expBarHeight);
     }
 
     function render() {
@@ -622,7 +713,7 @@
         </div>
       `).join('');
 
-      // Accounts
+      // Bank Accounts
       const accList = document.getElementById('accountList');
       accList.innerHTML = state.accounts.map(a => `
         <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #eee;">
@@ -631,9 +722,31 @@
         </div>
       `).join('');
 
-      // Transactions
+      // Category Budgets Progress
+      const budgetList = document.getElementById('budgetList');
+      budgetList.innerHTML = state.categories.map(c => {
+        const spent = state.transactions.filter(t => t.category === c.name && t.type === 'expense').reduce((s,t) => s + t.amount, 0);
+        const pct = Math.min(100, (spent / c.limit) * 100);
+        let statusClass = '';
+        if (pct > 85) statusClass = 'danger';
+        else if (pct > 65) statusClass = 'warn';
+
+        return `
+          <div style="margin-bottom:8px;">
+            <div style="display:flex; justify-content:space-between; font-size:0.8rem;">
+              <span>${c.name}</span>
+              <span>$${spent.toFixed(0)} / $${c.limit}</span>
+            </div>
+            <div class="progress-bg">
+              <div class="progress-fill ${statusClass}" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Transactions History
       const txList = document.getElementById('txList');
-      txList.innerHTML = state.transactions.slice(0, 6).map(tx => `
+      txList.innerHTML = state.transactions.slice(0, 8).map(tx => `
         <div class="tx-item">
           <div>
             <strong>${tx.title}</strong>
