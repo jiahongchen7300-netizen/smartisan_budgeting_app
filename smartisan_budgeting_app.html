@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smartisan OS Tactile Budgeting & Asset Management</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for canvas analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Modern / Skeuomorphic Theme Styles */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            user-select: none;
+            overflow-x: hidden;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* THEME 1: Smartisan Classic (Stitched Leather & Brass) */
+        body.theme-classic {
+            background-color: #2b1f1d;
+            background-image: radial-gradient(#3a2c29 1px, transparent 1px), radial-gradient(#3a2c29 1px, #2b1f1d 1px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            color: #33261d;
+        }
+        .theme-classic .smartisan-card {
+            background: #fbf8f3;
+            border: 1px solid #dcd1c4;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2), inset 0 1px 0 #ffffff;
+            border-radius: 12px;
+        }
+        .theme-classic .smartisan-header {
+            background: linear-gradient(180deg, #4d3833 0%, #362622 100%);
+            border-bottom: 2px solid #231714;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            color: #f3ece4;
+        }
+        .theme-classic .smartisan-btn-primary {
+            background: linear-gradient(180deg, #c39a6b 0%, #a07849 100%);
+            border: 1px solid #845e32;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 3px 6px rgba(0,0,0,0.3);
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+        }
+
+        /* THEME 2: Smartisan Dark Obsidian */
+        body.theme-dark-leather {
+            background-color: #121214;
+            background-image: radial-gradient(#212125 1px, transparent 1px);
+            background-size: 16px 16px;
+            color: #e2e8f0;
+        }
+        .theme-dark-leather .smartisan-card {
+            background: #1c1d22;
+            border: 1px solid #2e313b;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255,255,255,0.05);
+            border-radius: 12px;
+            color: #e2e8f0;
+        }
+        .theme-dark-leather .smartisan-header {
+            background: linear-gradient(180deg, #252730 0%, #17181f 100%);
+            border-bottom: 2px solid #0d0e12;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            color: #f1f5f9;
+        }
+        .theme-dark-leather .smartisan-btn-primary {
+            background: linear-gradient(180deg, #d97706 0%, #b45309 100%);
+            border: 1px solid #78350f;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 0 3px 6px rgba(0,0,0,0.5);
+            color: #ffffff;
+        }
+
+        /* THEME 3: Smartisan Ivory Minimal */
+        body.theme-ivory {
+            background-color: #f3f2ee;
+            color: #27272a;
+        }
+        .theme-ivory .smartisan-card {
+            background: #ffffff;
+            border: 1px solid #e4e4e7;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06), inset 0 1px 0 #ffffff;
+            border-radius: 12px;
+        }
+        .theme-ivory .smartisan-header {
+            background: #ffffff;
+            border-bottom: 1px solid #e4e4e7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            color: #18181b;
+        }
+        .theme-ivory .smartisan-btn-primary {
+            background: linear-gradient(180deg, #3f3f46 0%, #27272a 100%);
+            border: 1px solid #18181b;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            color: #ffffff;
+        }
+
+        /* THEME 4: Smartisan Vintage Wood */
+        body.theme-wood {
+            background-color: #1f140e;
+            background-image: repeating-linear-gradient(45deg, #251811 0, #251811 10px, #1f140e 10px, #1f140e 20px);
+            color: #3b2314;
+        }
+        .theme-wood .smartisan-card {
+            background: #f5eedc;
+            border: 1px solid #cbb898;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5), inset 0 1px 0 #fff;
+            border-radius: 10px;
+        }
+        .theme-wood .smartisan-header {
+            background: linear-gradient(180deg, #422517 0%, #2e180d 100%);
+            border-bottom: 2px solid #190c06;
+            color: #f7ebda;
+        }
+        .theme-wood .smartisan-btn-primary {
+            background: linear-gradient(180deg, #b45309 0%, #78350f 100%);
+            border: 1px solid #451a03;
+            color: #fef3c7;
+        }
+
+        /* Leather Stitching Border Effect */
+        .stitched-border {
+            outline: 2px dashed rgba(180, 140, 100, 0.35);
+            outline-offset: -6px;
+        }
+
+        /* Tactile Button Press Animation */
+        .tactile-btn {
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tactile-btn:active {
+            transform: translateY(2px) scale(0.98);
+        }
+
+        /* Layout Edit Mode Styling */
+        .edit-layout-active .dashboard-block {
+            border: 2px dashed #d97706 !important;
+            position: relative;
+        }
+        .dashboard-block.dragging {
+            opacity: 0.4;
+            scale: 0.98;
+        }
+
+        /* Glowing Voice Pulse Animation */
+        @keyframes pulse-red-glow {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 14px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .recording-pulse {
+            animation: pulse-red-glow 1.5s infinite;
+            background-color: #ef4444 !important;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(150,150,150,0.3);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="theme-classic min-h-screen pb-20">
+
+    <!-- TOP HEADER -->
+    <header class="smartisan-header sticky top-0 z-30 px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-amber-600 flex items-center justify-center text-white shadow-md font-bold text-lg border border-amber-400/40">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            <div>
+                <h1 class="font-extrabold text-base leading-tight tracking-wide" id="appTitle">Smartisan Ledger</h1>
+                <p class="text-xs opacity-75" id="appSubtitle">Tactile Asset & Expense Tracker</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+            <!-- Edit Layout Mode Toggle Button -->
+            <button id="toggleEditLayoutBtn" onclick="toggleEditLayoutMode()" class="tactile-btn px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-xs font-bold text-amber-200 flex items-center gap-1.5">
+                <i class="fa-solid fa-arrows-up-down-left-right"></i>
+                <span id="editLayoutBtnText">Edit Layout</span>
+            </button>
+
+            <!-- Theme Quick Switcher -->
+            <select id="themeSelector" onchange="changeTheme(this.value)" class="text-xs bg-black/20 text-current border border-white/20 rounded-lg px-2 py-1.5 focus:outline-none cursor-pointer">
+                <option value="classic" class="text-black">Classic Leather</option>
+                <option value="dark-leather" class="text-black">Dark Obsidian</option>
+                <option value="ivory" class="text-black">Ivory Minimal</option>
+                <option value="wood" class="text-black">Vintage Mahogany</option>
+            </select>
+
+            <!-- Settings Trigger Button -->
+            <button onclick="toggleSettingsDrawer(true)" class="tactile-btn p-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-current transition" title="Open Settings">
+                <i class="fa-solid fa-gear text-base"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- EDIT LAYOUT BANNER NOTIFICATION -->
+    <div id="layoutEditBanner" class="hidden bg-amber-600 text-white px-4 py-2 text-center text-xs font-bold flex items-center justify-center gap-2 shadow-inner">
+        <i class="fa-solid fa-hand-pointer"></i>
+        <span>Layout Customization Mode Active: Drag cards using brass handles or tap arrows to reorder.</span>
+        <button onclick="toggleEditLayoutMode(false)" class="ml-4 px-2 py-0.5 rounded bg-black/20 hover:bg-black/40 text-white underline">Done</button>
+    </div>
+
+    <!-- MAIN CONTAINER WITH DYNAMICALLY REORDERABLE BLOCKS -->
+    <main id="dashboardContainer" class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+
+        <!-- BLOCK 1: VOICE & NATURAL LANGUAGE IDEA PILL INPUT -->
+        <div id="block-voicePill" class="dashboard-block smartisan-card p-4 sm:p-5 relative overflow-hidden" draggable="false">
+            <div class="block-drag-handle hidden p-2 mb-2 bg-amber-500/10 rounded-lg border border-amber-500/20 flex items-center justify-between cursor-grab">
+                <div class="flex items-center gap-2 font-bold text-xs text-amber-700 dark:text-amber-400">
+                    <i class="fa-solid fa-grip-vertical"></i>
+                    <span>Voice & Natural Language Bar</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button onclick="moveBlock('block-voicePill', -1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-up"></i></button>
+                    <button onclick="moveBlock('block-voicePill', 1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-down"></i></button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between mb-2">
+                <label class="text-xs font-bold uppercase tracking-wider text-amber-800/80 dark:text-amber-400/90 flex items-center gap-1.5">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span id="labelNaturalInput">Smart Voice & Natural Text Entry</span>
+                </label>
+                <span class="text-[11px] opacity-60">e.g., "Spent $45 on Lunch using Chase"</span>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <div class="relative flex-1">
+                    <input type="text" id="naturalInput" placeholder="Type or speak expense (e.g. 'Paid $120 for Electric bill')..."
+                        class="w-full pl-4 pr-10 py-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium text-sm transition"
+                        onkeypress="if(event.key === 'Enter') processNaturalLanguageInput()">
+                    <button onclick="processNaturalLanguageInput()" class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-amber-700 hover:text-amber-900 dark:text-amber-400">
+                        <i class="fa-solid fa-arrow-right text-base"></i>
+                    </button>
+                </div>
+
+                <button id="voiceMicBtn" onclick="toggleVoiceRecognition()" 
+                    class="tactile-btn flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm shadow-lg border border-red-400/40 transition shrink-0">
+                    <i id="voiceMicIcon" class="fa-solid fa-microphone text-base"></i>
+                    <span id="voiceMicText" class="hidden sm:inline">Voice Log</span>
+                </button>
+            </div>
+            <div id="voiceStatus" class="hidden text-xs text-red-500 font-medium mt-1.5 flex items-center gap-1">
+                <span class="inline-block w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+                <span>Listening... Speak your transaction clearly.</span>
+            </div>
+        </div>
+
+        <!-- BLOCK 2: EXPRESS 1-TAP QUICK BADGES -->
+        <div id="block-expressBadges" class="dashboard-block smartisan-card p-4" draggable="false">
+            <div class="block-drag-handle hidden p-2 mb-2 bg-amber-500/10 rounded-lg border border-amber-500/20 flex items-center justify-between cursor-grab">
+                <div class="flex items-center gap-2 font-bold text-xs text-amber-700 dark:text-amber-400">
+                    <i class="fa-solid fa-grip-vertical"></i>
+                    <span>1-Tap Express Badges</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button onclick="moveBlock('block-expressBadges', -1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-up"></i></button>
+                    <button onclick="moveBlock('block-expressBadges', 1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-down"></i></button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-xs font-bold uppercase tracking-wider opacity-70 flex items-center gap-1.5">
+                    <i class="fa-solid fa-bolt text-amber-600"></i>
+                    <span id="labelExpressBadges">1-Tap Express Quick Log</span>
+                </h3>
+                <button onclick="toggleSettingsDrawer(true, 'expressTab')" class="text-xs text-amber-700 dark:text-amber-400 hover:underline">
+                    Edit Express Badges
+                </button>
+            </div>
+            <div id="expressBadgesContainer" class="flex flex-wrap gap-2.5">
+                <!-- Dynamically Populated Express Badges -->
+            </div>
+        </div>
+
+        <!-- BLOCK 3: ASSETS, NET WORTH & BANK ACCOUNTS -->
+        <div id="block-netWorthAccounts" class="dashboard-block grid grid-cols-1 md:grid-cols-3 gap-6" draggable="false">
+            <!-- TOTAL NET WORTH CARD -->
+            <div class="smartisan-card p-5 flex flex-col justify-between stitched-border relative">
+                <div class="block-drag-handle hidden p-2 mb-2 bg-amber-500/10 rounded-lg border border-amber-500/20 flex items-center justify-between cursor-grab">
+                    <div class="flex items-center gap-2 font-bold text-xs text-amber-700 dark:text-amber-400">
+                        <i class="fa-solid fa-grip-vertical"></i>
+                        <span>Accounts Block</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <button onclick="moveBlock('block-netWorthAccounts', -1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button onclick="moveBlock('block-netWorthAccounts', 1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-down"></i></button>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between text-xs opacity-75 font-semibold">
+                        <span id="labelTotalNetWorth">Total Net Worth</span>
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div class="text-3xl font-extrabold mt-2 tracking-tight" id="netWorthDisplay">$0.00</div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-black/10 dark:border-white/10 flex justify-between text-xs opacity-80">
+                    <div>Income: <span id="totalIncomeDisplay" class="text-emerald-600 font-bold">$0.00</span></div>
+                    <div>Expense: <span id="totalExpenseDisplay" class="text-rose-600 font-bold">$0.00</span></div>
+                </div>
+            </div>
+
+            <!-- ACCOUNTS / CARDS LIST -->
+            <div class="smartisan-card p-5 md:col-span-2">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-bold text-sm tracking-wide flex items-center gap-2">
+                        <i class="fa-solid fa-building-columns text-amber-600"></i>
+                        <span id="labelAccounts">Accounts & Balances</span>
+                    </h3>
+                    <button onclick="toggleSettingsDrawer(true, 'accountsTab')" class="text-xs text-amber-700 dark:text-amber-400 hover:underline">
+                        Manage Accounts
+                    </button>
+                </div>
+                <div id="accountsListGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <!-- Accounts rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- BLOCK 4: CATEGORY SPENDING & BUDGET LIMITS -->
+        <div id="block-categoryBudgets" class="dashboard-block smartisan-card p-5" draggable="false">
+            <div class="block-drag-handle hidden p-2 mb-2 bg-amber-500/10 rounded-lg border border-amber-500/20 flex items-center justify-between cursor-grab">
+                <div class="flex items-center gap-2 font-bold text-xs text-amber-700 dark:text-amber-400">
+                    <i class="fa-solid fa-grip-vertical"></i>
+                    <span>Category Budgets Block</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button onclick="moveBlock('block-categoryBudgets', -1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-up"></i></button>
+                    <button onclick="moveBlock('block-categoryBudgets', 1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-down"></i></button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h3 class="font-bold text-sm tracking-wide flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-amber-600"></i>
+                        <span id="labelCategoryBudgets">Category Spending & Limits</span>
+                    </h3>
+                    <p class="text-xs opacity-60">Monthly limits and burn rates</p>
+                </div>
+                <button onclick="toggleSettingsDrawer(true, 'categoriesTab')" class="text-xs text-amber-700 dark:text-amber-400 hover:underline">
+                    Edit Categories
+                </button>
+            </div>
+            <div id="categoryBudgetsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Dynamically rendered Category Cards -->
+            </div>
+        </div>
+
+        <!-- BLOCK 5: VISUAL CANVAS ANALYTICS -->
+        <div id="block-analyticsCharts" class="dashboard-block grid grid-cols-1 lg:grid-cols-2 gap-6" draggable="false">
+            <div class="smartisan-card p-5">
+                <div class="block-drag-handle hidden p-2 mb-2 bg-amber-500/10 rounded-lg border border-amber-500/20 flex items-center justify-between cursor-grab">
+                    <div class="flex items-center gap-2 font-bold text-xs text-amber-700 dark:text-amber-400">
+                        <i class="fa-solid fa-grip-vertical"></i>
+                        <span>Analytics Block</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <button onclick="moveBlock('block-analyticsCharts', -1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button onclick="moveBlock('block-analyticsCharts', 1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-down"></i></button>
+                    </div>
+                </div>
+
+                <h3 class="font-bold text-sm mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-donut text-amber-600"></i>
+                    Expense Category Breakdown
+                </h3>
+                <div class="relative h-64 w-full">
+                    <canvas id="expenseDonutChart"></canvas>
+                </div>
+            </div>
+            <div class="smartisan-card p-5">
+                <h3 class="font-bold text-sm mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-column text-amber-600"></i>
+                    Income vs Expense Comparison
+                </h3>
+                <div class="relative h-64 w-full">
+                    <canvas id="incomeExpenseBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- BLOCK 6: SAVINGS GOAL TRACKER -->
+        <div id="block-savingsGoals" class="dashboard-block smartisan-card p-5" draggable="false">
+            <div class="block-drag-handle hidden p-2 mb-2 bg-amber-500/10 rounded-lg border border-amber-500/20 flex items-center justify-between cursor-grab">
+                <div class="flex items-center gap-2 font-bold text-xs text-amber-700 dark:text-amber-400">
+                    <i class="fa-solid fa-grip-vertical"></i>
+                    <span>Savings Goals Block</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button onclick="moveBlock('block-savingsGoals', -1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-up"></i></button>
+                    <button onclick="moveBlock('block-savingsGoals', 1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-down"></i></button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-sm tracking-wide flex items-center gap-2">
+                    <i class="fa-solid fa-piggy-bank text-amber-600"></i>
+                    Savings Goals Tracker
+                </h3>
+                <button onclick="promptAddGoal()" class="tactile-btn text-xs px-3 py-1.5 rounded-lg smartisan-btn-primary">
+                    + Add Goal
+                </button>
+            </div>
+            <div id="savingsGoalsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Dynamically populated goals -->
+            </div>
+        </div>
+
+        <!-- BLOCK 7: TRANSACTION HISTORY LEDGER -->
+        <div id="block-transactionHistory" class="dashboard-block smartisan-card p-5" draggable="false">
+            <div class="block-drag-handle hidden p-2 mb-2 bg-amber-500/10 rounded-lg border border-amber-500/20 flex items-center justify-between cursor-grab">
+                <div class="flex items-center gap-2 font-bold text-xs text-amber-700 dark:text-amber-400">
+                    <i class="fa-solid fa-grip-vertical"></i>
+                    <span>Transaction History Block</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button onclick="moveBlock('block-transactionHistory', -1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-up"></i></button>
+                    <button onclick="moveBlock('block-transactionHistory', 1)" class="px-2 py-0.5 rounded bg-black/10 hover:bg-black/20"><i class="fa-solid fa-arrow-down"></i></button>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                <div>
+                    <h3 class="font-bold text-sm tracking-wide flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-amber-600"></i>
+                        <span id="labelTransactionHistory">Transaction History Ledger</span>
+                    </h3>
+                    <p class="text-xs opacity-60">Search, filter, or update individual entries</p>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <input type="text" id="txSearchInput" onkeyup="renderTransactions()" placeholder="Search transactions..." 
+                        class="px-3 py-1.5 text-xs rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 focus:outline-none">
+                    <select id="txFilterType" onchange="renderTransactions()" class="px-2 py-1.5 text-xs rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
+                        <option value="ALL">All Types</option>
+                        <option value="EXPENSE">Expense</option>
+                        <option value="INCOME">Income</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="border-b border-black/10 dark:border-white/10 opacity-70">
+                            <th class="py-2 px-3 font-semibold">Date</th>
+                            <th class="py-2 px-3 font-semibold">Note / Description</th>
+                            <th class="py-2 px-3 font-semibold">Category</th>
+                            <th class="py-2 px-3 font-semibold">Account</th>
+                            <th class="py-2 px-3 font-semibold text-right">Amount</th>
+                            <th class="py-2 px-3 font-semibold text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionsTableBody">
+                        <!-- Dynamic Transactions -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FLOATING HIGH-VISIBILITY LEDGER PILL VOICEMIC -->
+    <div class="fixed bottom-6 right-6 z-40 flex items-center gap-2">
+        <button id="floatingMicBtn" onclick="toggleVoiceRecognition()" 
+            class="tactile-btn w-14 h-14 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-2xl border-2 border-white/40">
+            <i class="fa-solid fa-microphone text-xl"></i>
+        </button>
+    </div>
+
+    <!-- COMPREHENSIVE SETTINGS DRAWER / HUB MODAL -->
+    <div id="settingsModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="smartisan-card w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-white/20">
+            
+            <div class="p-4 border-b border-black/10 dark:border-white/10 flex items-center justify-between bg-black/5 dark:bg-white/5">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-amber-600 text-lg"></i>
+                    <h2 class="font-extrabold text-base">Smartisan Settings Hub</h2>
+                </div>
+                <button onclick="toggleSettingsDrawer(false)" class="p-1 text-base opacity-60 hover:opacity-100">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="flex border-b border-black/10 dark:border-white/10 text-xs font-semibold overflow-x-auto bg-black/5">
+                <button onclick="switchSettingsTab('layoutTab')" id="btn-layoutTab" class="px-4 py-2.5 border-b-2 border-amber-600 text-amber-600">Layout Blocks</button>
+                <button onclick="switchSettingsTab('expressTab')" id="btn-expressTab" class="px-4 py-2.5 border-b-2 border-transparent hover:text-amber-600">1-Tap Express</button>
+                <button onclick="switchSettingsTab('accountsTab')" id="btn-accountsTab" class="px-4 py-2.5 border-b-2 border-transparent hover:text-amber-600">Accounts & Banks</button>
+                <button onclick="switchSettingsTab('categoriesTab')" id="btn-categoriesTab" class="px-4 py-2.5 border-b-2 border-transparent hover:text-amber-600">Categories & Budgets</button>
+                <button onclick="switchSettingsTab('preferencesTab')" id="btn-preferencesTab" class="px-4 py-2.5 border-b-2 border-transparent hover:text-amber-600">Preferences</button>
+                <button onclick="switchSettingsTab('dataTab')" id="btn-dataTab" class="px-4 py-2.5 border-b-2 border-transparent hover:text-amber-600">Data & Backup</button>
+            </div>
+
+            <div class="p-5 overflow-y-auto flex-1 space-y-6 text-xs">
+
+                <!-- TAB 0: LAYOUT BLOCK VISIBILITY & REORDERING -->
+                <div id="tab-layoutTab" class="settings-tab-content space-y-4">
+                    <div class="flex items-center justify-between">
+                        <p class="opacity-70">Toggle block visibility and reset default dashboard layout order.</p>
+                        <button onclick="resetLayoutOrder()" class="tactile-btn px-3 py-1 rounded bg-black/10 hover:bg-black/20">Reset Layout Order</button>
+                    </div>
+                    <div id="settingsLayoutBlocksList" class="space-y-2">
+                        <!-- Dynamically Populated Layout Options -->
+                    </div>
+                </div>
+
+                <!-- TAB 1: 1-TAP EXPRESS BADGES -->
+                <div id="tab-expressTab" class="settings-tab-content space-y-4 hidden">
+                    <div class="flex items-center justify-between">
+                        <p class="opacity-70">Customize quick log buttons for fast single-tap expense logging.</p>
+                        <button onclick="addNewExpressBadge()" class="tactile-btn px-3 py-1.5 rounded-lg smartisan-btn-primary">+ Add Express Badge</button>
+                    </div>
+                    <div id="settingsExpressList" class="space-y-2">
+                        <!-- Rendered via JS -->
+                    </div>
+                </div>
+
+                <!-- TAB 2: ACCOUNTS & BANKS -->
+                <div id="tab-accountsTab" class="settings-tab-content space-y-4 hidden">
+                    <div class="flex items-center justify-between">
+                        <p class="opacity-70">Manage your financial accounts, starting balances, and icons.</p>
+                        <button onclick="addNewAccount()" class="tactile-btn px-3 py-1.5 rounded-lg smartisan-btn-primary">+ Add Account</button>
+                    </div>
+                    <div id="settingsAccountsList" class="space-y-2">
+                        <!-- Rendered via JS -->
+                    </div>
+                </div>
+
+                <!-- TAB 3: CATEGORIES & BUDGETS -->
+                <div id="tab-categoriesTab" class="settings-tab-content space-y-4 hidden">
+                    <div class="flex items-center justify-between">
+                        <p class="opacity-70">Define category spending limits, icons, and colors.</p>
+                        <button onclick="addNewCategory()" class="tactile-btn px-3 py-1.5 rounded-lg smartisan-btn-primary">+ Add Category</button>
+                    </div>
+                    <div id="settingsCategoriesList" class="space-y-2">
+                        <!-- Rendered via JS -->
+                    </div>
+                </div>
+
+                <!-- TAB 4: PREFERENCES -->
+                <div id="tab-preferencesTab" class="settings-tab-content space-y-4 hidden">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label class="font-bold">Currency Symbol</label>
+                            <select id="settingCurrency" onchange="updatePreferences()" class="w-full p-2.5 rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
+                                <option value="$">USD ($)</option>
+                                <option value="¥">CNY / JPY (¥)</option>
+                                <option value="€">EUR (€)</option>
+                                <option value="£">GBP (£)</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="font-bold">Display Language</label>
+                            <select id="settingLanguage" onchange="updatePreferences()" class="w-full p-2.5 rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
+                                <option value="en">English (EN)</option>
+                                <option value="zh-CN">简体中文 (CN)</option>
+                                <option value="zh-TW">繁體中文 (TW)</option>
+                                <option value="es">Español (ES)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 5: DATA MANAGEMENT -->
+                <div id="tab-dataTab" class="settings-tab-content space-y-4 hidden">
+                    <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-3">
+                        <h4 class="font-bold">Export & Import Data</h4>
+                        <p class="opacity-70">Backup your data to JSON or export transaction records to CSV.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="exportJSON()" class="tactile-btn px-3 py-2 rounded-lg bg-emerald-600 text-white font-medium">
+                                <i class="fa-solid fa-download me-1"></i> Export JSON
+                            </button>
+                            <button onclick="exportCSV()" class="tactile-btn px-3 py-2 rounded-lg bg-blue-600 text-white font-medium">
+                                <i class="fa-solid fa-file-csv me-1"></i> Export CSV
+                            </button>
+                            <label class="tactile-btn px-3 py-2 rounded-lg bg-purple-600 text-white font-medium cursor-pointer">
+                                <i class="fa-solid fa-upload me-1"></i> Import JSON
+                                <input type="file" id="importJsonInput" accept=".json" onchange="importJSON(event)" class="hidden">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 space-y-3">
+                        <h4 class="font-bold text-rose-600 dark:text-rose-400">Danger Zone</h4>
+                        <p class="opacity-70">Permanently erase all local storage data and reset application defaults.</p>
+                        <button onclick="confirmResetAllData()" class="tactile-btn px-4 py-2 rounded-lg bg-rose-600 text-white font-bold">
+                            <i class="fa-solid fa-triangle-exclamation me-1"></i> Reset All Local Data
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="p-4 border-t border-black/10 dark:border-white/10 flex justify-end bg-black/5 dark:bg-white/5">
+                <button onclick="toggleSettingsDrawer(false)" class="tactile-btn px-5 py-2 rounded-xl smartisan-btn-primary font-bold">
+                    Done
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SCRIPT APPLICATION LOGIC -->
+    <script>
+        // --- INITIAL STATE & LOCAL STORAGE DEFAULTS ---
+        const DEFAULT_BLOCK_ORDER = [
+            { id: 'block-voicePill', name: 'Voice & Natural Language', visible: true },
+            { id: 'block-expressBadges', name: '1-Tap Express Quick Log', visible: true },
+            { id: 'block-netWorthAccounts', name: 'Accounts & Net Worth', visible: true },
+            { id: 'block-categoryBudgets', name: 'Category Budgets', visible: true },
+            { id: 'block-analyticsCharts', name: 'Visual Canvas Charts', visible: true },
+            { id: 'block-savingsGoals', name: 'Savings Goals Tracker', visible: true },
+            { id: 'block-transactionHistory', name: 'Transaction History Ledger', visible: true }
+        ];
+
+        const DEFAULT_STATE = {
+            currency: '$',
+            language: 'en',
+            theme: 'classic',
+            layoutOrder: DEFAULT_BLOCK_ORDER,
+            accounts: [
+                { id: 'acc_chase', name: 'Chase Checking', balance: 4250.00, icon: 'fa-landmark' },
+                { id: 'acc_amex', name: 'AMEX Credit', balance: -820.50, icon: 'fa-credit-card' },
+                { id: 'acc_cash', name: 'Physical Cash', balance: 340.00, icon: 'fa-money-bill' }
+            ],
+            categories: [
+                { id: 'cat_food', name: 'Food & Dining', icon: 'fa-utensils', limit: 800 },
+                { id: 'cat_transport', name: 'Transport', icon: 'fa-car', limit: 300 },
+                { id: 'cat_utilities', name: 'Utilities & Bills', icon: 'fa-bolt', limit: 500 },
+                { id: 'cat_shopping', name: 'Shopping', icon: 'fa-bag-shopping', limit: 400 }
+            ],
+            expressBadges: [
+                { id: 'badge_coffee', label: 'Coffee', amount: 5.50, categoryId: 'cat_food', icon: 'fa-mug-hot' },
+                { id: 'badge_subway', label: 'Subway Ride', amount: 2.90, categoryId: 'cat_transport', icon: 'fa-subway' },
+                { id: 'badge_lunch', label: 'Quick Lunch', amount: 15.00, categoryId: 'cat_food', icon: 'fa-burger' },
+                { id: 'badge_groceries', label: 'Groceries', amount: 65.00, categoryId: 'cat_food', icon: 'fa-cart-shopping' }
+            ],
+            transactions: [
+                { id: 'tx_1', date: '2026-10-20', type: 'EXPENSE', amount: 45.00, categoryId: 'cat_food', accountId: 'acc_chase', note: 'Dinner with colleagues' },
+                { id: 'tx_2', date: '2026-10-21', type: 'EXPENSE', amount: 12.50, categoryId: 'cat_transport', accountId: 'acc_amex', note: 'Uber Ride' },
+                { id: 'tx_3', date: '2026-10-22', type: 'INCOME', amount: 2500.00, categoryId: 'cat_utilities', accountId: 'acc_chase', note: 'Salary Direct Deposit' }
+            ],
+            savingsGoals: [
+                { id: 'goal_1', name: 'Japan Trip', target: 3000, current: 1450, icon: 'fa-plane' },
+                { id: 'goal_2', name: 'Tech Upgrade', target: 1200, current: 800, icon: 'fa-laptop' }
+            ]
+        };
+
+        let appData = JSON.parse(localStorage.getItem('smartisan_budget_app')) || DEFAULT_STATE;
+        if (!appData.layoutOrder) appData.layoutOrder = DEFAULT_BLOCK_ORDER;
+
+        let isEditLayoutMode = false;
+
+        function saveData() {
+            localStorage.setItem('smartisan_budget_app', JSON.stringify(appData));
+            renderAll();
+        }
+
+        // --- CHARTS INSTANCES ---
+        let donutChartInstance = null;
+        let barChartInstance = null;
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            changeTheme(appData.theme || 'classic');
+            applyLayoutOrder();
+            renderAll();
+            setupDragAndDrop();
+        };
+
+        function renderAll() {
+            renderAccounts();
+            renderExpressBadges();
+            renderCategoryBudgets();
+            renderTransactions();
+            renderSavingsGoals();
+            renderCharts();
+            updateSettingsForms();
+        }
+
+        // --- DYNAMIC BLOCK LAYOUT & DRAG AND DROP ---
+        function applyLayoutOrder() {
+            const container = document.getElementById('dashboardContainer');
+            appData.layoutOrder.forEach(blockInfo => {
+                const el = document.getElementById(blockInfo.id);
+                if (el) {
+                    container.appendChild(el); // Re-append in stored order
+                    if (blockInfo.visible === false) {
+                        el.classList.add('hidden');
+                    } else {
+                        el.classList.remove('hidden');
+                    }
+                }
+            });
+        }
+
+        function toggleEditLayoutMode(forceState) {
+            isEditLayoutMode = forceState !== undefined ? forceState : !isEditLayoutMode;
+            const container = document.getElementById('dashboardContainer');
+            const banner = document.getElementById('layoutEditBanner');
+            const btnText = document.getElementById('editLayoutBtnText');
+
+            if (isEditLayoutMode) {
+                container.classList.add('edit-layout-active');
+                banner.classList.remove('hidden');
+                btnText.innerText = 'Done Editing';
+                document.querySelectorAll('.block-drag-handle').forEach(h => h.classList.remove('hidden'));
+                document.querySelectorAll('.dashboard-block').forEach(b => b.setAttribute('draggable', 'true'));
+            } else {
+                container.classList.remove('edit-layout-active');
+                banner.classList.add('hidden');
+                btnText.innerText = 'Edit Layout';
+                document.querySelectorAll('.block-drag-handle').forEach(h => h.classList.add('hidden'));
+                document.querySelectorAll('.dashboard-block').forEach(b => b.setAttribute('draggable', 'false'));
+            }
+        }
+
+        function moveBlock(blockId, direction) {
+            const idx = appData.layoutOrder.findIndex(b => b.id === blockId);
+            if (idx < 0) return;
+
+            const newIdx = idx + direction;
+            if (newIdx >= 0 && newIdx < appData.layoutOrder.length) {
+                const temp = appData.layoutOrder[idx];
+                appData.layoutOrder[idx] = appData.layoutOrder[newIdx];
+                appData.layoutOrder[newIdx] = temp;
+                applyLayoutOrder();
+                saveData();
+            }
+        }
+
+        function setupDragAndDrop() {
+            const container = document.getElementById('dashboardContainer');
+            let draggedEl = null;
+
+            container.addEventListener('dragstart', (e) => {
+                if (!isEditLayoutMode) return;
+                draggedEl = e.target.closest('.dashboard-block');
+                if (draggedEl) draggedEl.classList.add('dragging');
+            });
+
+            container.addEventListener('dragend', (e) => {
+                if (draggedEl) draggedEl.classList.remove('dragging');
+                draggedEl = null;
+                // Update internal state order based on DOM order
+                const newOrder = [];
+                container.querySelectorAll('.dashboard-block').forEach(el => {
+                    const blockObj = appData.layoutOrder.find(b => b.id === el.id);
+                    if (blockObj) newOrder.push(blockObj);
+                });
+                appData.layoutOrder = newOrder;
+                saveData();
+            });
+
+            container.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                if (!isEditLayoutMode || !draggedEl) return;
+                const afterElement = getDragAfterElement(container, e.clientY);
+                if (afterElement == null) {
+                    container.appendChild(draggedEl);
+                } else {
+                    container.insertBefore(draggedEl, afterElement);
+                }
+            });
+        }
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.dashboard-block:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function resetLayoutOrder() {
+            appData.layoutOrder = JSON.parse(JSON.stringify(DEFAULT_BLOCK_ORDER));
+            applyLayoutOrder();
+            saveData();
+        }
+
+        // --- THEME SWITCHER ---
+        function changeTheme(themeName) {
+            appData.theme = themeName;
+            document.body.className = `theme-${themeName} min-h-screen pb-20`;
+            document.getElementById('themeSelector').value = themeName;
+            localStorage.setItem('smartisan_budget_app', JSON.stringify(appData));
+        }
+
+        function updatePreferences() {
+            appData.currency = document.getElementById('settingCurrency').value;
+            appData.language = document.getElementById('settingLanguage').value;
+            saveData();
+        }
+
+        // --- ACCOUNTS RENDER & CALCULATIONS ---
+        function renderAccounts() {
+            const grid = document.getElementById('accountsListGrid');
+            grid.innerHTML = '';
+
+            let netWorth = 0;
+            appData.accounts.forEach(acc => {
+                netWorth += acc.balance;
+                const card = document.createElement('div');
+                card.className = "p-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center justify-between";
+                card.innerHTML = `
+                    <div class="flex items-center space-x-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-600 flex items-center justify-center">
+                            <i class="fa-solid ${acc.icon}"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-xs">${acc.name}</div>
+                            <div class="text-xs font-semibold opacity-80">${appData.currency}${acc.balance.toFixed(2)}</div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            document.getElementById('netWorthDisplay').innerText = `${appData.currency}${netWorth.toFixed(2)}`;
+
+            let totalInc = 0, totalExp = 0;
+            appData.transactions.forEach(tx => {
+                if (tx.type === 'INCOME') totalInc += tx.amount;
+                if (tx.type === 'EXPENSE') totalExp += tx.amount;
+            });
+            document.getElementById('totalIncomeDisplay').innerText = `${appData.currency}${totalInc.toFixed(2)}`;
+            document.getElementById('totalExpenseDisplay').innerText = `${appData.currency}${totalExp.toFixed(2)}`;
+        }
+
+        // --- 1-TAP EXPRESS BADGES ---
+        function renderExpressBadges() {
+            const container = document.getElementById('expressBadgesContainer');
+            container.innerHTML = '';
+
+            appData.expressBadges.forEach(badge => {
+                const btn = document.createElement('button');
+                btn.className = "tactile-btn px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 flex items-center gap-2 text-xs font-semibold text-amber-800 dark:text-amber-300";
+                btn.onclick = () => logExpressTransaction(badge);
+                btn.innerHTML = `
+                    <i class="fa-solid ${badge.icon || 'fa-bolt'}"></i>
+                    <span>${badge.label} (${appData.currency}${badge.amount})</span>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function logExpressTransaction(badge) {
+            const defaultAcc = appData.accounts[0] ? appData.accounts[0].id : '';
+            const newTx = {
+                id: 'tx_' + Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                type: 'EXPENSE',
+                amount: badge.amount,
+                categoryId: badge.categoryId,
+                accountId: defaultAcc,
+                note: `Express: ${badge.label}`
+            };
+
+            const acc = appData.accounts.find(a => a.id === defaultAcc);
+            if (acc) acc.balance -= badge.amount;
+
+            appData.transactions.unshift(newTx);
+            saveData();
+        }
+
+        // --- CATEGORIES & BUDGET TRACKER ---
+        function renderCategoryBudgets() {
+            const grid = document.getElementById('categoryBudgetsGrid');
+            grid.innerHTML = '';
+
+            appData.categories.forEach(cat => {
+                const spent = appData.transactions
+                    .filter(tx => tx.categoryId === cat.id && tx.type === 'EXPENSE')
+                    .reduce((sum, tx) => sum + tx.amount, 0);
+
+                const percent = Math.min(100, Math.round((spent / (cat.limit || 1)) * 100));
+                let colorClass = "bg-emerald-500";
+                if (percent > 75) colorClass = "bg-amber-500";
+                if (percent > 95) colorClass = "bg-rose-500";
+
+                const card = document.createElement('div');
+                card.className = "p-3.5 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 space-y-2";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid ${cat.icon} text-amber-600"></i>
+                            <span class="font-bold">${cat.name}</span>
+                        </div>
+                        <span class="opacity-70">${appData.currency}${spent.toFixed(0)} / ${appData.currency}${cat.limit}</span>
+                    </div>
+                    <div class="w-full h-2 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
+                        <div class="h-full ${colorClass} transition-all duration-300" style="width: ${percent}%"></div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- TRANSACTIONS LEDGER ---
+        function renderTransactions() {
+            const tbody = document.getElementById('transactionsTableBody');
+            tbody.innerHTML = '';
+
+            const query = document.getElementById('txSearchInput').value.toLowerCase();
+            const filterType = document.getElementById('txFilterType').value;
+
+            const filtered = appData.transactions.filter(tx => {
+                const matchesQuery = tx.note.toLowerCase().includes(query);
+                const matchesType = filterType === 'ALL' || tx.type === filterType;
+                return matchesQuery && matchesType;
+            });
+
+            filtered.forEach(tx => {
+                const cat = appData.categories.find(c => c.id === tx.categoryId) || { name: 'General' };
+                const acc = appData.accounts.find(a => a.id === tx.accountId) || { name: 'Cash' };
+                const isInc = tx.type === 'INCOME';
+
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-black/5 dark:border-white/5 hover:bg-black/5 dark:hover:bg-white/5 transition";
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3 opacity-70">${tx.date}</td>
+                    <td class="py-2.5 px-3 font-semibold">${tx.note}</td>
+                    <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-800 dark:text-amber-300">${cat.name}</span></td>
+                    <td class="py-2.5 px-3 opacity-80">${acc.name}</td>
+                    <td class="py-2.5 px-3 text-right font-bold ${isInc ? 'text-emerald-600' : 'text-rose-600'}">
+                        ${isInc ? '+' : '-'}${appData.currency}${tx.amount.toFixed(2)}
+                    </td>
+                    <td class="py-2.5 px-3 text-center">
+                        <button onclick="deleteTransaction('${tx.id}')" class="text-rose-500 hover:text-rose-700 p-1">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function deleteTransaction(id) {
+            appData.transactions = appData.transactions.filter(t => t.id !== id);
+            saveData();
+        }
+
+        // --- SAVINGS GOALS ---
+        function renderSavingsGoals() {
+            const grid = document.getElementById('savingsGoalsGrid');
+            grid.innerHTML = '';
+
+            appData.savingsGoals.forEach(goal => {
+                const percent = Math.min(100, Math.round((goal.current / goal.target) * 100));
+                const card = document.createElement('div');
+                card.className = "p-4 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 space-y-3";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2 font-bold text-xs">
+                            <i class="fa-solid ${goal.icon} text-amber-600"></i>
+                            <span>${goal.name}</span>
+                        </div>
+                        <span class="text-xs font-semibold opacity-70">${percent}%</span>
+                    </div>
+                    <div class="w-full h-2 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
+                        <div class="h-full bg-amber-600 transition-all" style="width: ${percent}%"></div>
+                    </div>
+                    <div class="flex items-center justify-between text-xs opacity-80">
+                        <span>${appData.currency}${goal.current} / ${appData.currency}${goal.target}</span>
+                        <div class="flex gap-1">
+                            <button onclick="adjustGoal('${goal.id}', 50)" class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-700 font-bold">+50</button>
+                            <button onclick="adjustGoal('${goal.id}', -50)" class="px-2 py-1 rounded bg-rose-500/20 text-rose-700 font-bold">-50</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function adjustGoal(id, delta) {
+            const goal = appData.savingsGoals.find(g => g.id === id);
+            if (goal) {
+                goal.current = Math.max(0, goal.current + delta);
+                saveData();
+            }
+        }
+
+        function promptAddGoal() {
+            const name = prompt("Goal Name:", "New Laptop");
+            if (!name) return;
+            const target = parseFloat(prompt("Target Amount:", "1000")) || 500;
+
+            appData.savingsGoals.push({
+                id: 'goal_' + Date.now(),
+                name: name,
+                target: target,
+                current: 0,
+                icon: 'fa-bullseye'
+            });
+            saveData();
+        }
+
+        // --- NATURAL LANGUAGE PARSER & VOICE LOGGING ---
+        function processNaturalLanguageInput() {
+            const input = document.getElementById('naturalInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const amountMatch = text.match(/[\$\¥\€\£]?\s*(\d+(\.\d+)?)/);
+            const amount = amountMatch ? parseFloat(amountMatch[1]) : 10;
+
+            let type = 'EXPENSE';
+            if (text.toLowerCase().includes('salary') || text.toLowerCase().includes('income') || text.toLowerCase().includes('earned')) {
+                type = 'INCOME';
+            }
+
+            const defaultCat = appData.categories[0] ? appData.categories[0].id : '';
+            const defaultAcc = appData.accounts[0] ? appData.accounts[0].id : '';
+
+            const newTx = {
+                id: 'tx_' + Date.now(),
+                date: new Date().toISOString().split('T')[0],
+                type: type,
+                amount: amount,
+                categoryId: defaultCat,
+                accountId: defaultAcc,
+                note: text
+            };
+
+            appData.transactions.unshift(newTx);
+            input.value = '';
+            saveData();
+        }
+
+        let isRecording = false;
+        let recognition = null;
+
+        function toggleVoiceRecognition() {
+            const micBtn = document.getElementById('voiceMicBtn');
+            const floatMicBtn = document.getElementById('floatingMicBtn');
+            const voiceStatus = document.getElementById('voiceStatus');
+
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert("Speech recognition is not supported in this browser.");
+                return;
+            }
+
+            if (!isRecording) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+
+                recognition.onstart = function() {
+                    isRecording = true;
+                    micBtn.classList.add('recording-pulse');
+                    floatMicBtn.classList.add('recording-pulse');
+                    voiceStatus.classList.remove('hidden');
+                };
+
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('naturalInput').value = transcript;
+                    processNaturalLanguageInput();
+                };
+
+                recognition.onend = function() {
+                    isRecording = false;
+                    micBtn.classList.remove('recording-pulse');
+                    floatMicBtn.classList.remove('recording-pulse');
+                    voiceStatus.classList.add('hidden');
+                };
+
+                recognition.start();
+            } else {
+                if (recognition) recognition.stop();
+            }
+        }
+
+        // --- SETTINGS HUB DRAWER MODAL ---
+        function toggleSettingsDrawer(show, openTab = 'layoutTab') {
+            const modal = document.getElementById('settingsModal');
+            if (show) {
+                modal.classList.remove('hidden');
+                switchSettingsTab(openTab);
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function switchSettingsTab(tabId) {
+            document.querySelectorAll('.settings-tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('#settingsModal button[id^="btn-"]').forEach(btn => {
+                btn.classList.remove('border-amber-600', 'text-amber-600');
+                btn.classList.add('border-transparent');
+            });
+
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('border-amber-600', 'text-amber-600');
+                activeBtn.classList.remove('border-transparent');
+            }
+        }
+
+        function updateSettingsForms() {
+            document.getElementById('settingCurrency').value = appData.currency || '$';
+            document.getElementById('settingLanguage').value = appData.language || 'en';
+
+            // Layout Settings list
+            const layoutList = document.getElementById('settingsLayoutBlocksList');
+            layoutList.innerHTML = '';
+            appData.layoutOrder.forEach((block, idx) => {
+                const div = document.createElement('div');
+                div.className = "flex items-center justify-between p-2.5 rounded-lg bg-black/5 dark:bg-white/5";
+                div.innerHTML = `
+                    <div class="flex items-center gap-2 font-semibold">
+                        <i class="fa-solid fa-grip-vertical opacity-50"></i>
+                        <span>${block.name}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="flex items-center gap-1 cursor-pointer">
+                            <input type="checkbox" ${block.visible !== false ? 'checked' : ''} 
+                                onchange="appData.layoutOrder[${idx}].visible = this.checked; saveData(); applyLayoutOrder();">
+                            <span>Show</span>
+                        </label>
+                    </div>
+                `;
+                layoutList.appendChild(div);
+            });
+
+            // Express Badges Settings
+            const expressList = document.getElementById('settingsExpressList');
+            expressList.innerHTML = '';
+            appData.expressBadges.forEach((b, idx) => {
+                const div = document.createElement('div');
+                div.className = "flex items-center gap-2 p-2 rounded-lg bg-black/5 dark:bg-white/5";
+                div.innerHTML = `
+                    <input type="text" value="${b.label}" onchange="appData.expressBadges[${idx}].label = this.value; saveData();" class="p-1 rounded bg-white dark:bg-black/20 w-1/3">
+                    <input type="number" value="${b.amount}" onchange="appData.expressBadges[${idx}].amount = parseFloat(this.value); saveData();" class="p-1 rounded bg-white dark:bg-black/20 w-1/4">
+                    <button onclick="appData.expressBadges.splice(${idx}, 1); saveData();" class="text-rose-500 p-1"><i class="fa-solid fa-trash"></i></button>
+                `;
+                expressList.appendChild(div);
+            });
+
+            // Accounts Settings
+            const accountsList = document.getElementById('settingsAccountsList');
+            accountsList.innerHTML = '';
+            appData.accounts.forEach((acc, idx) => {
+                const div = document.createElement('div');
+                div.className = "flex items-center gap-2 p-2 rounded-lg bg-black/5 dark:bg-white/5";
+                div.innerHTML = `
+                    <input type="text" value="${acc.name}" onchange="appData.accounts[${idx}].name = this.value; saveData();" class="p-1 rounded bg-white dark:bg-black/20 w-1/2">
+                    <input type="number" value="${acc.balance}" onchange="appData.accounts[${idx}].balance = parseFloat(this.value); saveData();" class="p-1 rounded bg-white dark:bg-black/20 w-1/3">
+                    <button onclick="appData.accounts.splice(${idx}, 1); saveData();" class="text-rose-500 p-1"><i class="fa-solid fa-trash"></i></button>
+                `;
+                accountsList.appendChild(div);
+            });
+
+            // Categories Settings
+            const categoriesList = document.getElementById('settingsCategoriesList');
+            categoriesList.innerHTML = '';
+            appData.categories.forEach((cat, idx) => {
+                const div = document.createElement('div');
+                div.className = "flex items-center gap-2 p-2 rounded-lg bg-black/5 dark:bg-white/5";
+                div.innerHTML = `
+                    <input type="text" value="${cat.name}" onchange="appData.categories[${idx}].name = this.value; saveData();" class="p-1 rounded bg-white dark:bg-black/20 w-1/2">
+                    <input type="number" value="${cat.limit}" onchange="appData.categories[${idx}].limit = parseFloat(this.value); saveData();" class="p-1 rounded bg-white dark:bg-black/20 w-1/3">
+                    <button onclick="appData.categories.splice(${idx}, 1); saveData();" class="text-rose-500 p-1"><i class="fa-solid fa-trash"></i></button>
+                `;
+                categoriesList.appendChild(div);
+            });
+        }
+
+        function addNewExpressBadge() {
+            appData.expressBadges.push({
+                id: 'badge_' + Date.now(),
+                label: 'New Badge',
+                amount: 10.00,
+                categoryId: appData.categories[0]?.id || '',
+                icon: 'fa-tag'
+            });
+            saveData();
+        }
+
+        function addNewAccount() {
+            appData.accounts.push({
+                id: 'acc_' + Date.now(),
+                name: 'New Card / Bank',
+                balance: 1000.00,
+                icon: 'fa-credit-card'
+            });
+            saveData();
+        }
+
+        function addNewCategory() {
+            appData.categories.push({
+                id: 'cat_' + Date.now(),
+                name: 'New Category',
+                icon: 'fa-layer-group',
+                limit: 500
+            });
+            saveData();
+        }
+
+        // --- DATA MANAGEMENT ---
+        function exportJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", `smartisan_budget_backup_${new Date().toISOString().split('T')[0]}.json`);
+            dlAnchorElem.click();
+        }
+
+        function exportCSV() {
+            let csv = "Date,Type,Amount,Category,Account,Note\n";
+            appData.transactions.forEach(tx => {
+                const cat = appData.categories.find(c => c.id === tx.categoryId)?.name || '';
+                const acc = appData.accounts.find(a => a.id === tx.accountId)?.name || '';
+                csv += `"${tx.date}","${tx.type}",${tx.amount},"${cat}","${acc}","${tx.note}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `smartisan_transactions_${new Date().toISOString().split('T')[0]}.csv`);
+            a.click();
+        }
+
+        function importJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed && parsed.accounts && parsed.transactions) {
+                        appData = parsed;
+                        saveData();
+                        alert("Data imported successfully!");
+                    } else {
+                        alert("Invalid JSON format for Smartisan App.");
+                    }
+                } catch (err) {
+                    alert("Error parsing JSON file.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function confirmResetAllData() {
+            if (confirm("Are you sure you want to permanently reset all data to default values? This cannot be undone.")) {
+                appData = JSON.parse(JSON.stringify(DEFAULT_STATE));
+                saveData();
+                toggleSettingsDrawer(false);
+            }
+        }
+
+        // --- HTML5 CANVAS CHARTS ---
+        function renderCharts() {
+            const donutCtx = document.getElementById('expenseDonutChart').getContext('2d');
+            const barCtx = document.getElementById('incomeExpenseBarChart').getContext('2d');
+
+            if (donutChartInstance) donutChartInstance.destroy();
+            if (barChartInstance) barChartInstance.destroy();
+
+            const catMap = {};
+            appData.transactions.filter(t => t.type === 'EXPENSE').forEach(tx => {
+                const cat = appData.categories.find(c => c.id === tx.categoryId)?.name || 'Other';
+                catMap[cat] = (catMap[cat] || 0) + tx.amount;
+            });
+
+            donutChartInstance = new Chart(donutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(catMap),
+                    datasets: [{
+                        data: Object.values(catMap),
+                        backgroundColor: ['#d97706', '#059669', '#2563eb', '#dc2626', '#8b5cf6', '#ec4899']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+
+            let incTotal = 0, expTotal = 0;
+            appData.transactions.forEach(tx => {
+                if (tx.type === 'INCOME') incTotal += tx.amount;
+                if (tx.type === 'EXPENSE') expTotal += tx.amount;
+            });
+
+            barChartInstance = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Income', 'Expense'],
+                    datasets: [{
+                        label: 'Amount',
+                        data: [incTotal, expTotal],
+                        backgroundColor: ['#10b981', '#f43f5e']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
